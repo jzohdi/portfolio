@@ -30,7 +30,7 @@
 	{/each}
 	<Spacer height="20px"></Spacer>
 	<Text element="h3" class="text-secondary">Things I remind myself</Text>
-	<Text element="ul" class="list-none text-sm">
+	<Text element="p" class="list-none text-sm">
 		<Text element="li">Always take small opportunities to go one level deeper.</Text>
 		<Text element="li">Practice with people who are better than you.</Text>
 		<Text element="li">Make time for the people around you, and remember what’s important.</Text>
