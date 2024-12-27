@@ -3,6 +3,7 @@
 	import Spacer from '$lib/components/Spacer.svelte';
 	import Text from '$lib/components/Text.svelte';
 	import type { NotionData } from '$lib/types';
+	import { tick } from 'svelte';
 	let { data }: { data: NotionData } = $props();
 	let aboutme1 = data.aboutme1;
 	let aboutme2 = data.aboutme2;
@@ -29,12 +30,11 @@
 		</Text>
 	{/each}
 	<Spacer height="20px"></Spacer>
-	<Text element="h3" class="text-secondary">Things I remind myself</Text>
+	<Text element="h3" class="text-secondary">{aboutme2.title}</Text>
 	<Text element="p" class="list-none text-sm">
-		<Text element="li">Always take small opportunities to go one level deeper.</Text>
-		<Text element="li">Practice with people who are better than you.</Text>
-		<Text element="li">Make time for the people around you, and remember what’s important.</Text>
-		<Text element="li">"You sure about that?"</Text>
+		{#each aboutme2.p as content}
+			<Text element="li">{content}</Text>
+		{/each}
 	</Text>
 {/snippet}
 
