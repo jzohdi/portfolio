@@ -1,9 +1,13 @@
 <script lang="ts">
-	import '../app.css';
+	
+	import { ModeWatcher } from "mode-watcher";
+	import Layout from '$lib/components/Layout.svelte';
+import '../app.css';
 	let { children } = $props();
-	import WebglBackground from '../lib/components/WebglBackground.svelte';
 </script>
+ 
 
-<WebglBackground />
-
-{@render children()}
+<ModeWatcher />
+<Layout>
+	{@render children()}
+</Layout>
