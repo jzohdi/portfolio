@@ -21,13 +21,19 @@ Planned Pages
 - connect to notion
 - Home page
   - recent blogs
+    - blog needs:
+      - hero image
+      - title
+      - headers + paragraphs
+      - code snippets
 - create webgl resume
   - write a blog in notion about the webgl resume
-
+- create library for adding nav scroller to web page.
 - revalidate static content trigger - authenticate with jwt /auth/login - /regenerate
 - meta data / SEO
 - test on mobile
 - improve react draw docs
+- create package to webgl render water effects (based on mindful draw water)
 
 ## Blog ideas
 

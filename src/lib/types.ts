@@ -7,6 +7,12 @@ export type NotionData = {
 		title: string;
 		p: string[];
 	};
+	resume: {
+		title: string;
+		p: string[];
+		title2: string;
+		li: string[];
+	};
 };
 
 export interface NotionResult {

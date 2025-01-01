@@ -9,10 +9,10 @@
 		isMenuOpen = !isMenuOpen;
 	}
 	const menuItems = [
-		{ href: '/', label: 'About' }
-		// { href: '/projects', label: 'Projects' },
-		// { href: '/experiments', label: 'Experiments' },
-		// {href: "/blog", label: "Blog"}
+		{ href: '/', label: 'About' },
+		{ href: '/projects', label: 'Projects' },
+		{ href: '/experiments', label: 'Experiments' },
+		{ href: '/blog', label: 'Blog' }
 	];
 </script>
 
