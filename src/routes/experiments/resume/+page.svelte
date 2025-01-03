@@ -10,6 +10,28 @@
 	// let gl: WebGLRenderingContext;
 	// let program: WebGLProgram;
 	let renderer: WebGLCanvasRenderer | null = null;
+
+	let isDragging = false;
+
+	function handleMouseDown(event: MouseEvent) {
+		isDragging = true;
+		if (renderer) {
+			renderer.startPan(event);
+		}
+	}
+
+	function handleMouseMove(event: MouseEvent) {
+		if (isDragging && renderer && canvas) {
+			renderer.panTo(event);
+			renderer.clear();
+			renderer.render(canvas);
+		}
+	}
+
+	function handleMouseUp() {
+		isDragging = false;
+	}
+
 	onDestroy(() => {
 		if (renderer !== null) {
 			renderer.clear();
@@ -32,11 +54,6 @@
 			document.body.removeChild(tree.iframe);
 			// Render 2D canvas to WebGL canvas
 			renderer.render(canvas);
-			// webglCanvas.width = 800;
-			// webglCanvas.height = 600;
-			// gl = setupGl(webglCanvas);
-			// program = setupWebglProgram(gl);
-			// webglPaper(canvas, gl, program);
 		}
 	});
 
@@ -47,19 +64,6 @@
 			renderer.clear();
 			renderer.render(canvas);
 		}
-		// if (gl !== null && program != null && canvas !== null) {
-		// 	const zoomFactor = 0.1;
-
-		// 	// Adjust zoom level
-		// 	zoom *= event.deltaY > 0 ? 1 - zoomFactor : 1 + zoomFactor;
-		// 	zoom = Math.max(0.1, Math.min(zoom, 10)); // Clamp zoom level
-		// 	gl.clearColor(0, 0, 0, 1); // Clear the canvas
-		// 	gl.clear(gl.COLOR_BUFFER_BIT);
-
-		// 	const zoomLocation = gl.getUniformLocation(program, 'u_zoom');
-		// 	gl.uniform1f(zoomLocation, zoom);
-		// 	webglPaper(canvas, gl, program);
-		// }
 	}
 
 	function isCanvasElement(canvas: HTMLCanvasElement | null): canvas is HTMLCanvasElement {
@@ -113,12 +117,15 @@
 </script>
 
 <div class="h-full w-full">
-	<canvas width={512} height={1024} class="bg-white" bind:this={canvas}></canvas>
+	<canvas width={1024} height={2048} class="bg-white" bind:this={canvas}></canvas>
 	<canvas
-		width={512}
-		height={1024}
+		width={1024}
+		height={2048}
 		class="touch-none bg-white"
 		bind:this={webglCanvas}
 		on:wheel={zoomInWebgl}
+		on:mousemove={handleMouseMove}
+		on:mouseup={handleMouseUp}
+		on:mousedown={handleMouseDown}
 	></canvas>
 </div>
