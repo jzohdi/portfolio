@@ -60,7 +60,6 @@ function clamp(value: number, min: number, max: number): number {
 class ZoomState {
 	private scale: number = 1.0;
 	private zoomCenter: [number, number] = [0, 0];
-	private prevMax: [number, number] | null = null;
 	private panPosition: [number, number] = [0, 0];
 
 	constructor() {}
@@ -87,7 +86,7 @@ class ZoomState {
 
 		// gets the normalized change vector (user mouse relative to prev center between [-1, 1])
 		const normalizedChange = normalizeGlCoords(changeInCenter, rect);
-		const scaledNormChange = scaleVec(normalizedChange, 1 / this.scale ** 2);
+		const scaledNormChange = scaleVec(normalizedChange, 1 / Math.max(1, this.scale) ** 2);
 
 		const prevZooom = this.zoomCenter;
 		// const clampChangeFactor = 0.001;
@@ -98,45 +97,35 @@ class ZoomState {
 		const scaleFactor = e.deltaY > 0 ? 0.95 : 1.05;
 		const prevScale = this.scale;
 		this.scale *= scaleFactor;
-		this.scale = clamp(this.scale, 0.1, 5.0);
+		this.scale = clamp(this.scale, 0.5, 5.0);
 		if (this.scale === prevScale) {
 			this.zoomCenter = prevZooom;
 		}
 	}
 
-	private panToCoords([x, y]: [number, number]) {
-		let deltaX = x - this.panPosition[0]; // / (this.scale > 1 ? this.scale : 1 / this.scale);
-		let deltaY = y - this.panPosition[1]; /// (this.scale > 1 ? this.scale : 1 / this.scale);
-
-		if (this.scale < 1) {
-			deltaX *= -1;
-			deltaY *= -1;
-		}
-		this.zoomCenter[0] -= deltaX;
-		this.zoomCenter[1] -= deltaY;
-
-		this.panPosition = [x, y];
-	}
-
 	panTo(e: MouseEvent, canvas: HTMLCanvasElement) {
-		const [x, y] = this.getMousePos(e, canvas);
+		// const [x, y] = this.getMousePos(e, canvas);
 
 		// Scale the movement based on current zoom level
-		let deltaX = x - this.panPosition[0]; // / (this.scale > 1 ? this.scale : 1 / this.scale);
-		let deltaY = y - this.panPosition[1]; /// (this.scale > 1 ? this.scale : 1 / this.scale);
+		const dX = e.clientX - this.panPosition[0]; // / (this.scale > 1 ? this.scale : 1 / this.scale);
+		const dY = this.panPosition[1] - e.clientY; /// (this.scale > 1 ? this.scale : 1 / this.scale);
+
+		let [deltaX, deltaY] = normalizeGlCoords([dX, dY], canvas.getBoundingClientRect());
 
 		if (this.scale < 1) {
 			deltaX *= -1;
 			deltaY *= -1;
 		}
-		this.zoomCenter[0] -= deltaX;
-		this.zoomCenter[1] -= deltaY;
+		// const scaleFactor = this.scale > 1 ? this.scale : 1 / this.scale ** 2;
+		const scaleFactor = 1 / this.scale;
+		this.zoomCenter[0] -= deltaX * scaleFactor;
+		this.zoomCenter[1] -= deltaY * scaleFactor;
 
-		this.panPosition = [x, y];
+		this.panPosition = [e.clientX, e.clientY];
 	}
 
-	startPan(e: MouseEvent, canvas: HTMLCanvasElement) {
-		this.panPosition = this.getMousePos(e, canvas);
+	startPan(e: MouseEvent) {
+		this.panPosition = [e.clientX, e.clientY];
 	}
 
 	setPanPosition(pos: [number, number]) {
@@ -281,6 +270,6 @@ export class WebGLCanvasRenderer {
 	}
 
 	startPan(e: MouseEvent) {
-		this.zoomState.startPan(e, this.canvas);
+		this.zoomState.startPan(e);
 	}
 }
