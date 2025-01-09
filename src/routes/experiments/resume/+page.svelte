@@ -1,9 +1,14 @@
 <script lang="ts">
-	import { parse, toCanvas, type AstNode, type ParsedHtml } from '$lib/utils/htmlpaint';
-	import { WebGLCanvasRenderer } from '$lib/utils/webglRenderer';
+	import Spacer from '$lib/components/Spacer.svelte';
+	import { toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
+	import { parse } from '$lib/utils/htmlpaint/htmlParser';
+	import { type AstNode } from '$lib/utils/htmlpaint/types';
+	import { type ParsedHtml } from '$lib/utils/htmlpaint/types';
+	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
 
 	let canvas: HTMLCanvasElement | null = null;
+	let webglCanvasContainer: HTMLDivElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = null;
 	// let gl: WebGLRenderingContext;
 	// let program: WebGLProgram;
@@ -44,21 +49,31 @@
 	});
 
 	onMount(async () => {
-		if (isCanvasElement(canvas) && isCanvasElement(webglCanvas)) {
+		if (isCanvasElement(webglCanvas)) {
+			canvas = document.createElement('canvas');
+			canvas.width = webglCanvas.width * 2;
+			canvas.height = webglCanvas.height * 2;
 			renderer = new WebGLCanvasRenderer(webglCanvas);
 			const results = await fetch('/files/resume.html');
 			const htmlString = await results.text();
 			const tree = await parse(htmlString);
-			// console.log(tree);
 			const ctx = canvas.getContext('2d');
 			if (!ctx) {
 				return;
 			}
 			// Start rendering from the body
 			const widthScale = canvas.width / tree.rect.width;
-			// console.log({ heightScale, widthScale });
-			// toCanvas(ctx, tree, widthScale);
-			toCanvas(ctx, tree);
+			ctx.scale(widthScale, widthScale);
+			const fullHeight = toCanvas(ctx, tree);
+			// console.log(fullHeight);
+			const aspectRatio = fullHeight / tree.rect.width;
+			// console.log({ aspectRatio });
+			const containerHeight = webglCanvas.width * aspectRatio;
+			if (webglCanvasContainer) {
+				webglCanvasContainer.style.overflow = 'hidden';
+				webglCanvasContainer.style.height = `${containerHeight}px`;
+			}
+
 			document.body.removeChild(tree.iframe);
 			// Render 2D canvas to WebGL canvas
 			renderer.render(canvas);
@@ -80,15 +95,18 @@
 </script>
 
 <div class="h-full w-full">
-	<canvas width={1024} height={2048} class="bg-white" bind:this={canvas}></canvas>
-	<canvas
-		width={1024}
-		height={2048}
-		class="touch-none bg-white"
-		bind:this={webglCanvas}
-		on:wheel={zoomInWebgl}
-		on:mousemove={handleMouseMove}
-		on:mouseup={handleMouseUp}
-		on:mousedown={handleMouseDown}
-	></canvas>
+	<!-- <canvas width={2048} height={4096} class="bg-white" bind:this={canvas}></canvas> -->
+	<div bind:this={webglCanvasContainer}>
+		<canvas
+			width={1024}
+			height={2048}
+			class="touch-none bg-white"
+			bind:this={webglCanvas}
+			on:wheel={zoomInWebgl}
+			on:mousemove={handleMouseMove}
+			on:mouseup={handleMouseUp}
+			on:mousedown={handleMouseDown}
+		></canvas>
+	</div>
+	<Spacer height="100px"></Spacer>
 </div>
