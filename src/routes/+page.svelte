@@ -3,6 +3,8 @@
 	import Spacer from '$lib/components/Spacer.svelte';
 	import Text from '$lib/components/Text.svelte';
 	import type { NotionData } from '$lib/types';
+	import RenderedResume from '$lib/components/pages/about/RenderedResume.svelte';
+
 	const { data }: { data: NotionData } = $props();
 	const aboutme1 = data.aboutme1;
 	const aboutme2 = data.aboutme2;
@@ -61,7 +63,7 @@
 {/snippet}
 
 {#snippet resumeRender()}
-	<div class="h-full w-full bg-slate-500"></div>
+	<RenderedResume />
 {/snippet}
 
 <Spacer height={'10px'}></Spacer>

@@ -10,7 +10,7 @@ Planned Pages
   - playground
   - resume - webgl view - be able to scroll and zoom
 - experiments
-- blogs
+- posts
 -
 
 ## TODO
@@ -21,13 +21,15 @@ Planned Pages
 - connect to notion
 - Home page
   - recent blogs
-    - blog needs:
-      - hero image
+    - post needs:
+      - hero image?
       - title
       - headers + paragraphs
       - code snippets
 - create webgl resume
   - write a blog in notion about the webgl resume
+- offline usage -> when using in dev save versions of the notion pulling locally.
+  - on fail use the cached version (only locally) otherwise update
 - create library for adding nav scroller to web page.
 - revalidate static content trigger - authenticate with jwt /auth/login - /regenerate
 - meta data / SEO
@@ -35,8 +37,9 @@ Planned Pages
 - improve react draw docs
 - create package to webgl render water effects (based on mindful draw water)
 
-## Blog ideas
+## Post ideas
 
+- [ ] Lying Kills
 - [ ] Implementing JWT for my personal site - this is how to call the
 - [ ] How I built the resume webgl render
   - [ ] take notes while doing this

@@ -11,19 +11,25 @@ function getStartingPosition(tree: ParsedHtml) {
 	throw new Error('unsupported operation');
 }
 
-function lastElementHeight(tree: ParsedHtml): number {
+function lastElementRect(tree: ParsedHtml) {
 	for (let i = tree.parsedBody.length - 1; i >= 0; i--) {
 		const node = tree.parsedBody[i];
 		if (node.type !== 'string') {
-			return node.rect.height;
+			return node.rect;
 		}
 	}
 	throw new Error('unhandled scenario');
 }
 
+export function calculateHeight(tree: ParsedHtml) {
+	const { y } = getStartingPosition(tree);
+	const { height, top } = lastElementRect(tree);
+	return top + height + y;
+}
+
 export function toCanvas(ctx: CanvasRenderingContext2D, tree: ParsedHtml): number {
 	const { x, y } = getStartingPosition(tree);
-
+	const { height: heightOfLastEle } = lastElementRect(tree);
 	return (
 		tree.parsedBody
 			.filter((row): row is ElementNode => row.type !== 'string' && row.styles.display === 'block')
@@ -31,7 +37,7 @@ export function toCanvas(ctx: CanvasRenderingContext2D, tree: ParsedHtml): numbe
 				renderRow(ctx, row, x, prevRowTop, row.rect.width, 0);
 				return row.rect.top;
 			}, y) +
-		lastElementHeight(tree) +
+		heightOfLastEle +
 		y
 	);
 }

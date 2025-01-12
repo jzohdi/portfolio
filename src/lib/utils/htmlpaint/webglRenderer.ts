@@ -111,7 +111,6 @@ class ZoomState {
 		const dY = this.panPosition[1] - e.clientY; /// (this.scale > 1 ? this.scale : 1 / this.scale);
 
 		let [deltaX, deltaY] = normalizeGlCoords([dX, dY], canvas.getBoundingClientRect());
-
 		if (this.scale < 1) {
 			deltaX *= -1;
 			deltaY *= -1;
@@ -160,8 +159,10 @@ export class WebGLCanvasRenderer {
 	private texCoordBuffer: WebGLBuffer;
 	private texture: WebGLTexture;
 	private zoomState = new ZoomState();
+	private aspectRatio: number;
 
-	constructor(canvas: HTMLCanvasElement) {
+	constructor(canvas: HTMLCanvasElement, aspectRatio: number) {
+		this.aspectRatio = aspectRatio;
 		this.canvas = canvas;
 		this.gl = canvas.getContext('webgl', {
 			alpha: true,
@@ -195,10 +196,11 @@ export class WebGLCanvasRenderer {
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+		// mipmap requires power of 2 canvas
 		this.gl.texParameteri(
 			this.gl.TEXTURE_2D,
 			this.gl.TEXTURE_MIN_FILTER,
-			this.gl.LINEAR_MIPMAP_LINEAR
+			this.gl.LINEAR // this.gl.LINEAR_MIPMAP_LINEAR
 		);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 	}
@@ -252,7 +254,8 @@ export class WebGLCanvasRenderer {
 
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
-		gl.generateMipmap(gl.TEXTURE_2D);
+		// mipmap requires power of 2 canvas
+		// gl.generateMipmap(gl.TEXTURE_2D);
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	}
