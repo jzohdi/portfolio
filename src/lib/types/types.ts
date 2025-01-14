@@ -7,7 +7,21 @@ export type NotionData = {
 		title: string;
 		p: string[];
 	};
+	resume: {
+		title: string;
+		p: string[];
+		title2: string;
+		li: string[];
+	};
+	recentPosts: RecentPost[]
 };
+
+export interface RecentPost {
+	title: string;
+	description: string;
+	slug: string;
+	previewImage: string;
+}
 
 export interface NotionResult {
 	object: string;

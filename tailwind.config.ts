@@ -56,7 +56,7 @@ const config: Config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans],
-				display: ['Inter'] // Adds a new `font-display` class
+				display: ['Inter', ...fontFamily.sans] // Adds a new `font-display` class
 			}
 		}
 	}
