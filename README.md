@@ -36,6 +36,7 @@ Planned Pages
 - test on mobile
 - improve react draw docs
 - create package to webgl render water effects (based on mindful draw water)
+- use sudoku solver to create simple mini sudoku page, use wasm to connect to C code
 
 ## Post ideas
 
@@ -48,4 +49,3 @@ Planned Pages
 - [ ] Imagine you are in the middle of a migration - clean code concept. imagine being in the middle of a database migration.
    how would you write the code here.
 - [ ] how to use react draw to create AI svgs
-  - blog about

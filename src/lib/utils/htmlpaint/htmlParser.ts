@@ -3,7 +3,8 @@ import {
 	type AstContext,
 	type AstNode,
 	isSupportedTag,
-	type ParseNode
+	type ParseNode,
+	type StyleNode
 } from './types';
 
 export async function parse(htmlContent: string): Promise<ParsedHtml> {
@@ -150,4 +151,19 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 
 		document.body.appendChild(iframe);
 	});
+}
+
+export function appendStyles(tree: ParsedHtml): Promise<HTMLStyleElement[]> {
+	return Promise.all(tree.headElements.filter((node): node is StyleNode => node.type==="style").map((node => {
+		return new Promise<HTMLStyleElement>((resolve) => {
+			const tag = document.createElement("style")
+			tag.innerHTML = node.content;
+			document.fonts.ready.then(() => {
+				resolve(tag)
+			})
+			document.head.appendChild(tag);
+			
+			return tag;
+		})
+	})));
 }

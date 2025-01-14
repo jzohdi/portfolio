@@ -12,7 +12,12 @@
 		if (!container) {
 			return;
 		}
-
+		
+		const aspectRatio = textureCanvas.width / textureCanvas.height;
+		const targetWidth = container.getBoundingClientRect().width;
+	
+		container.style.height = targetWidth + "px";
+		container.style.width = (targetWidth * aspectRatio) + "px";
 		// === THREE.JS SETUP ===
 
 		// Scene
@@ -41,7 +46,6 @@
 		controls.enableZoom = true;
 
 		// === TEXTURE SETUP ===
-
 		// Create a texture from the textureCanvas
 		const texture = new THREE.CanvasTexture(textureCanvas);
 		texture.needsUpdate = true; // Ensure the texture updates if the canvas changes
@@ -67,11 +71,6 @@
 		];
 
 		// === GEOMETRY CREATION ===
-
-		// Calculate aspect ratio based on the textureCanvas
-		const canvasWidth = textureCanvas.width;
-		const canvasHeight = textureCanvas.height;
-		const aspectRatio = canvasWidth / canvasHeight;
 
 		// Define the dimensions of the prism
 		const prismHeight = 2; // You can adjust this value as needed
@@ -126,7 +125,7 @@
 <!-- Container for the Three.js canvas -->
 <div
 	bind:this={container}
-	class="three-container h-[calc(90vw)] max-h-[512px] w-[90vw] max-w-[512px]"
+	class="three-container w-full"
 ></div>
 
 <style>

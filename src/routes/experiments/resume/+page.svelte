@@ -5,6 +5,7 @@
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
 	import ThreeJsCube from '$lib/components/ThreeJsCube.svelte';
+	import RenderedResume from '$lib/components/pages/about/RenderedResume.svelte';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let textureCanvas: HTMLCanvasElement | null = null;
@@ -61,7 +62,7 @@
 			newCanvas.width = webglCanvas.width * 2;
 			newCanvas.height = webglCanvas.height * 2;
 
-			renderer = new WebGLCanvasRenderer(webglCanvas, aspectRatio);
+			renderer = new WebGLCanvasRenderer(webglCanvas);
 			const ctx = newCanvas.getContext('2d');
 			if (!ctx) {
 				return;

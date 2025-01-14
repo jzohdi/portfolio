@@ -12,7 +12,7 @@
 		{ href: '/', label: 'About' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/experiments', label: 'Experiments' },
-		{ href: '/blog', label: 'Blog' }
+		{ href: '/posts', label: 'Posts' }
 	];
 </script>
 

@@ -159,10 +159,8 @@ export class WebGLCanvasRenderer {
 	private texCoordBuffer: WebGLBuffer;
 	private texture: WebGLTexture;
 	private zoomState = new ZoomState();
-	private aspectRatio: number;
 
-	constructor(canvas: HTMLCanvasElement, aspectRatio: number) {
-		this.aspectRatio = aspectRatio;
+	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 		this.gl = canvas.getContext('webgl', {
 			alpha: true,

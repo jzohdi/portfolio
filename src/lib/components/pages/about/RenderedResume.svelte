@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { calculateHeight, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
-	import { parse } from '$lib/utils/htmlpaint/htmlParser';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import {  setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
+	import { appendStyles, parse } from '$lib/utils/htmlpaint/htmlParser';
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
-	// import ThreeJsCube from '$lib/components/ThreeJsCube.svelte';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
-	// let textureCanvas: HTMLCanvasElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = null;
 	let renderer: WebGLCanvasRenderer | null = null;
 	let iframe: HTMLIFrameElement | null = null;
@@ -42,39 +41,32 @@
 				console.log('no iframe to remove on destroy');
 			}
 		}
-	}); 
+	});
 
 	onMount(async () => {
 		if (isCanvasElement(webglCanvas)) {
 			const results = await fetch('/files/resume.html');
 			const htmlString = await results.text();
 			const tree = await parse(htmlString);
-			const heightOfTree = calculateHeight(tree);
-			const aspectRatio = heightOfTree / tree.rect.width;
-			webglCanvas.width = webglCanvas.getBoundingClientRect().width;
-			webglCanvas.height = webglCanvas.width * aspectRatio;
-			const newCanvas = document.createElement('canvas');
-			newCanvas.width = webglCanvas.width * 2;
-			newCanvas.height = webglCanvas.height * 2;
+			const styleTags = await appendStyles(tree);
+			const targetWidth = webglCanvas.getBoundingClientRect().width;
+			const { canvas, ctx, targetHeight } = setupCanvas(tree, targetWidth);
 
-			renderer = new WebGLCanvasRenderer(webglCanvas, aspectRatio);
-			const ctx = newCanvas.getContext('2d');
-			if (!ctx) {
-				return;
-			}
-			
-			// Start rendering from the body
-			const widthScale = newCanvas.width / tree.rect.width;
-			ctx.fillStyle = 'white';
-			ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-			ctx.scale(widthScale, widthScale);
+			webglCanvas.width = targetWidth;
+			webglCanvas.height = targetHeight;
+
+			renderer = new WebGLCanvasRenderer(webglCanvas);
 
 			toCanvas(ctx, tree);
 			// Render 2D canvas to WebGL canvas
-			renderer.render(newCanvas);
-			referrenceCanvas = newCanvas;
+			renderer.render(canvas);
+			referrenceCanvas = canvas;
+
+			// clean up iframe and style tags that loaded fonts
 			document.body.removeChild(tree.iframe);
-			
+			styleTags.forEach((tag) => {
+				document.head.removeChild(tag);
+			});
 		}
 	});
 
@@ -93,7 +85,7 @@
 </script>
 
 <canvas
-	class="w-full touch-none bg-black"
+	class="w-full touch-none bg-black border-2 border-zinc-200 rounded-md"
 	bind:this={webglCanvas}
 	on:wheel={zoomInWebgl}
 	on:mousemove={handleMouseMove}

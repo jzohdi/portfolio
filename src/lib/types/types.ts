@@ -13,7 +13,15 @@ export type NotionData = {
 		title2: string;
 		li: string[];
 	};
+	recentPosts: RecentPost[]
 };
+
+export interface RecentPost {
+	title: string;
+	description: string;
+	slug: string;
+	previewImage: string;
+}
 
 export interface NotionResult {
 	object: string;
