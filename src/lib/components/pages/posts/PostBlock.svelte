@@ -7,7 +7,7 @@
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { isValidUrl } from '$lib/utils/helper';
+	import { getFileNameFrom, isValidUrl } from '$lib/utils/helper';
 	storeHighlightJs.set(hljs);
 
 	interface PostBlockProps {
@@ -46,7 +46,7 @@
 	</div>
 	<Spacer height="10px"></Spacer>
 {:else if data.type === 'image'}
-	<LazyImage imageUrl={data.url} />
+	<LazyImage imageUrl={'/posts' + getFileNameFrom(data.url)} />
 {:else}
 	<div>{JSON.stringify(block)}</div>
 {/if}
