@@ -56,12 +56,21 @@
 			webglCanvas.height = targetHeight;
 
 			renderer = new WebGLCanvasRenderer(webglCanvas);
+			const base64String = await (await fetch("/files/resume.txt")).text();
+			const img = new Image();
+			// img.src = base64String;
 
-			toCanvas(ctx, tree);
-			// Render 2D canvas to WebGL canvas
-			renderer.render(canvas);
-			referrenceCanvas = canvas;
-
+			// Draw the image onto the destination canvas after it loads
+			img.onload = () => {
+				ctx.drawImage(img, 0, 0);
+				if (renderer) {
+					renderer.render(canvas);
+					referrenceCanvas = canvas;
+				}
+			};
+			img.src = base64String;
+			// toCanvas(ctx, tree);
+			
 			// clean up iframe and style tags that loaded fonts
 			document.body.removeChild(tree.iframe);
 		}

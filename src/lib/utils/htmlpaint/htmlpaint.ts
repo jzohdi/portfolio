@@ -3,7 +3,7 @@ import { renderTextRow } from './renderTextRow';
 import { type AstNode, type ElementNode, type ParsedHtml, type TextNode, type Word } from './types';
 
 export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
-	const heightOfTree = calculateHeight(tree);
+	const heightOfTree = calculateHeight(tree) - 10;
 	const aspectRatio = heightOfTree / tree.rect.width;
 	const targetHeight = targetWidth * aspectRatio
 	const newCanvas = document.createElement('canvas');
@@ -13,10 +13,10 @@ export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
 	if (!ctx) {
 		throw new Error("Canvas 2D not suppported.")
 	}
-	const widthScale = newCanvas.width / tree.rect.width;
+	// const widthScale = newCanvas.width / tree.rect.width;
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-	ctx.scale(widthScale, widthScale);
+	// ctx.scale(widthScale, widthScale);
 	return { aspectRatio, canvas: newCanvas, ctx, targetHeight }
 }
 
