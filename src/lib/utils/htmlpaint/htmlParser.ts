@@ -17,6 +17,8 @@ export async function parse(htmlContent: string): Promise<ParsedHtml> {
 	const firstPass = Array.from(doc.childNodes).flatMap((node) => {
 		return parseNode(node);
 	});
+	const styleTags = firstPass.filter((node): node is StyleNode => node?.type === 'style');
+	await appendStyles([...styleTags]);
 
 	const bodyNode = firstPass.filter((node) => node?.type === 'body')[0];
 	const parsed: ParsedHtml = {
@@ -153,17 +155,88 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 	});
 }
 
-export function appendStyles(tree: ParsedHtml): Promise<HTMLStyleElement[]> {
-	return Promise.all(tree.headElements.filter((node): node is StyleNode => node.type==="style").map((node => {
-		return new Promise<HTMLStyleElement>((resolve) => {
-			const tag = document.createElement("style")
-			tag.innerHTML = node.content;
-			document.fonts.ready.then(() => {
-				resolve(tag)
-			})
-			document.head.appendChild(tag);
-			
-			return tag;
-		})
-	})));
+export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[]> {
+	return Promise.all(
+		styleNodes.map(
+			(node) =>
+				new Promise<HTMLStyleElement>((resolve) => {
+					const tag = document.createElement('style');
+
+					extractContentToLoad(node.content).then((content) => {
+						if (!content) {
+							return resolve(tag);
+						}
+						const fontFaceRegex = /@font-face\s*{[^}]*}/gi;
+						const fontFaceBlocks = content.match(fontFaceRegex);
+						if (fontFaceBlocks === null) {
+							return resolve(tag);
+						}
+						const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
+						loadFonts(parsedFonts).then(() => {
+							resolve(tag);
+						});
+					});
+				})
+		)
+	);
+}
+
+async function extractContentToLoad(content: string): Promise<string> {
+	const pattern = /@import\s+url\(\s*(['"]?)(.*?)\1\s*\)/i;
+	const match = content.match(pattern);
+	try {
+		if (match) {
+			const url = match[2];
+			const result = await fetch(url);
+			const text = await result.text();
+			if (text.includes('@font-face')) {
+				return text;
+			}
+			return '';
+			// Output: https://themes.googleusercontent.com/fonts/css?kit=fpjTOVmNbO4Lz34iLyptLUXza5VhXqVC6o75Eld_V98
+		} else {
+			return '';
+		}
+	} catch (e) {
+		console.error(e);
+		return '';
+	}
+}
+
+async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
+	for (const font of fonts) {
+		if (font.fontFamily && font.srcUrl) {
+			const fontFace = new FontFace(
+				font.fontFamily,
+				`url(${font.srcUrl}) format('${font.format}')`,
+				{
+					style: font.fontStyle,
+					weight: font.fontWeight
+				}
+			);
+
+			try {
+				await fontFace.load();
+				document.fonts.add(fontFace);
+				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
+			} catch (error) {
+				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
+			}
+		}
+	}
+}
+
+function parseFontFaceBlock(block: string) {
+	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
+	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
+	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
+	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
+
+	return {
+		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
+		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
+		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
+		srcUrl: srcMatch ? srcMatch[1].trim() : null,
+		format: srcMatch ? srcMatch[2].trim() : null
+	};
 }

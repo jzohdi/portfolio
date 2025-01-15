@@ -2,6 +2,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import {  setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
 	import { appendStyles, parse } from '$lib/utils/htmlpaint/htmlParser';
+	import type { StyleNode } from '$lib/utils/htmlpaint/types';
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -48,7 +49,6 @@
 			const results = await fetch('/files/resume.html');
 			const htmlString = await results.text();
 			const tree = await parse(htmlString);
-			const styleTags = await appendStyles(tree);
 			const targetWidth = webglCanvas.getBoundingClientRect().width;
 			const { canvas, ctx, targetHeight } = setupCanvas(tree, targetWidth);
 
@@ -64,9 +64,6 @@
 
 			// clean up iframe and style tags that loaded fonts
 			document.body.removeChild(tree.iframe);
-			styleTags.forEach((tag) => {
-				document.head.removeChild(tag);
-			});
 		}
 	});
 

@@ -105,9 +105,7 @@ function renderRow(
 		const elementBound = row.rect.width ?? 0;
 		const startingY = row.rect?.top ?? y;
 		const startingX = row.rect?.left ?? x;
-
 		renderBeforeContent(ctx, row, startingX, startingY);
-
 		if (isAllSpanTextRow(row)) {
 			renderTextRow(ctx, row, startingX, startingY, elementBound);
 			return;
