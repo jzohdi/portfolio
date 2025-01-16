@@ -16,10 +16,10 @@
 		<Text element="h2" class="duration-400 font-bold group-hover:text-secondary">{post.title}</Text>
 		<Text element="p">{post.description}</Text>
 		{#each post.tags.split(',') as tag}
-            {#if !!tag}
-                <Badge variant="secondary" class="mt-3">{tag}</Badge>
-            {/if}
-        {/each}
+			{#if !!tag}
+				<Badge variant="secondary" class="mt-3">{tag}</Badge>
+			{/if}
+		{/each}
 		<ReadMore />
 	</a>
 {/snippet}
