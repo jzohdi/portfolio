@@ -3,7 +3,7 @@
 	import type { ParsedElement } from '$lib/notion/server';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import hljs from 'highlight.js';
-	import 'highlight.js/styles/github-dark.min.css';
+	// import 'highlight.js/styles/github-dark.min.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';

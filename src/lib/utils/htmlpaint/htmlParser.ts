@@ -180,7 +180,8 @@ export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[
 					// tag.type = "text/css";
 					tag.innerText = _node.content;
 					// resolve(tag);
-					document.head.appendChild(tag);
+					// document.head.appendChild(tag);
+					resolve(tag)
 					// setTimeout(() => {
 					// 	resolve(tag);
 					// }, 100)
@@ -202,31 +203,31 @@ export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[
 					// 	if (!content) {
 					// 		return resolve(tag);
 					// 	}
-					const content = `	@font-face {
-		font-family: 'Calibri';
-		font-style: normal;
-		font-weight: 400;
-		src: url(/fonts/font.woff2) format('woff2');
-		unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-	}
-	/* latin */
-	@font-face {
-		font-family: 'Calibri';
-		font-style: normal;
-		font-weight: 700;
-		src: url(/fonts/font_700.woff2) format('woff2');
-		unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-	}`
-						const fontFaceRegex = /@font-face\s*{[^}]*}/gi;
-						const fontFaceBlocks = content.match(fontFaceRegex);
-						if (fontFaceBlocks === null) {
-							return resolve(tag);
-						}
-						const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
-						loadFonts(parsedFonts).then(() => {
-							resolve(tag);
-						});
-					// });
+	// 				const content = `	@font-face {
+	// 	font-family: 'Calibri';
+	// 	font-style: normal;
+	// 	font-weight: 400;
+	// 	src: url(/fonts/font.woff2) format('woff2');
+	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	// }
+	// /* latin */
+	// @font-face {
+	// 	font-family: 'Calibri';
+	// 	font-style: normal;
+	// 	font-weight: 700;
+	// 	src: url(/fonts/font_700.woff2) format('woff2');
+	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	// }`
+	// 					const fontFaceRegex = /@font-face\s*{[^}]*}/gi;
+	// 					const fontFaceBlocks = content.match(fontFaceRegex);
+	// 					if (fontFaceBlocks === null) {
+	// 						return resolve(tag);
+	// 					}
+	// 					const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
+	// 					loadFonts(parsedFonts).then(() => {
+	// 						resolve(tag);
+	// 					});
+	// 				// });
 				})
 		)
 	);
@@ -254,40 +255,40 @@ export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[
 // 	}
 // }
 
-async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
-	for (const font of fonts) {
-		if (font.fontFamily && font.srcUrl) {
-			const fontFace = new FontFace(
-				font.fontFamily,
-				`url(${font.srcUrl}) format('${font.format}')`,
-				{
-					style: font.fontStyle,
-					weight: font.fontWeight
-				}
-			);
+// async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
+// 	for (const font of fonts) {
+// 		if (font.fontFamily && font.srcUrl) {
+// 			const fontFace = new FontFace(
+// 				font.fontFamily,
+// 				`url(${font.srcUrl}) format('${font.format}')`,
+// 				{
+// 					style: font.fontStyle,
+// 					weight: font.fontWeight
+// 				}
+// 			);
 
-			try {
-				await fontFace.load();
-				document.fonts.add(fontFace);
-				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
-			} catch (error) {
-				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
-			}
-		}
-	}
-}
+// 			try {
+// 				await fontFace.load();
+// 				document.fonts.add(fontFace);
+// 				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
+// 			} catch (error) {
+// 				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
+// 			}
+// 		}
+// 	}
+// }
 
-function parseFontFaceBlock(block: string) {
-	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
-	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
-	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
-	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
+// function parseFontFaceBlock(block: string) {
+// 	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
+// 	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
+// 	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
+// 	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
 
-	return {
-		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
-		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
-		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
-		srcUrl: srcMatch ? srcMatch[1].trim() : null,
-		format: srcMatch ? srcMatch[2].trim() : null
-	};
-}
+// 	return {
+// 		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
+// 		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
+// 		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
+// 		srcUrl: srcMatch ? srcMatch[1].trim() : null,
+// 		format: srcMatch ? srcMatch[2].trim() : null
+// 	};
+// }
