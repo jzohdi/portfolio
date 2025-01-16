@@ -3,7 +3,7 @@ import { renderTextRow } from './renderTextRow';
 import { type AstNode, type ElementNode, type ParsedHtml, type TextNode, type Word } from './types';
 
 export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
-	const heightOfTree = calculateHeight(tree) - 10;
+	const heightOfTree = calculateHeight(tree)
 	const aspectRatio = heightOfTree / tree.rect.width;
 	const targetHeight = targetWidth * aspectRatio
 	const newCanvas = document.createElement('canvas');

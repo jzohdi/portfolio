@@ -4,7 +4,6 @@
 	import Text from '$lib/components/Text.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import type { PostPreview } from '$lib/utils/svelte-helper';
-	import { element } from 'three/tsl';
 
 	const { data } = $props();
 	const posts = data.posts as PostPreview[];
