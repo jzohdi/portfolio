@@ -1,18 +1,16 @@
 <script lang="ts">
 	import Text from '$lib/components/Text.svelte';
-	import type { ParsedBlock, ParsedElement } from '$lib/notion/server';
+	import type { ParsedElement } from '$lib/notion/server';
 	import { CodeBlock } from '@skeletonlabs/skeleton';
 	import hljs from 'highlight.js';
 	import 'highlight.js/styles/github-dark.min.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { getFileNameFrom, isValidUrl } from '$lib/utils/helper';
+	import { isValidUrl } from '$lib/utils/vite-helper';
+	import { getImageSrc } from '$lib/utils/svelte-helper';
 	storeHighlightJs.set(hljs);
 
-	interface PostBlockProps {
-		block: ParsedBlock;
-	}
 	const { block } = $props();
 	const data = block as ParsedElement;
 </script>
@@ -46,7 +44,7 @@
 	</div>
 	<Spacer height="10px"></Spacer>
 {:else if data.type === 'image'}
-	<LazyImage imageUrl={'/posts' + getFileNameFrom(data.url)} />
+	<LazyImage imageUrl={getImageSrc('posts', data.url)} />
 {:else}
 	<div>{JSON.stringify(block)}</div>
 {/if}

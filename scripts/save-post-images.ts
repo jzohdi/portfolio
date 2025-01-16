@@ -1,7 +1,8 @@
-import { getFileNameFrom } from "../src/lib/utils/helper";
+import { getFileNameFrom } from "../src/lib/utils/vite-helper";
 import { getNotionClient, listAllPostBlocks, listPublishedPostByName, listPublishedPosts } from "../src/lib/notion/vite-build"
 import fs from "fs";
 import path from "path";
+// import sharp from "sharp";
 
 
 
@@ -9,6 +10,9 @@ export function saveImages() {
     return {
         name: "saveNotionPostImages",
         buildStart: async () => {
+            if (process.env.NODE_ENV === "development") {
+                return;
+            }
             const apiKey = process.env.NOTION_API_KEY;
             if (!apiKey) {
                 throw new Error("missing api key during vite build")
@@ -22,7 +26,10 @@ export function saveImages() {
                     console.error("post details is not of length 1 for name:", name)
                     continue;
                 }
-                const allBlocks = await listAllPostBlocks(client, postDetails[0].id);
+                const postToDownload = postDetails[0];
+                const thumbnailUrl = postToDownload.properties.thumbnail.files[0].file.url;
+                await fetchAndWriteFile(thumbnailUrl);
+                const allBlocks = await listAllPostBlocks(client, postToDownload.id);
                 for (const block of allBlocks) {
                     if (block.type === "image" && block.image?.file.url) {
                         await fetchAndWriteFile(block.image?.file.url)
@@ -41,6 +48,7 @@ async function fetchAndWriteFile(url: string) {
         }
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
+        // const compressedBuffer = await sharp(buffer).jpeg({ quality: 80 }).toBuffer();
         const fileName = getFileNameFrom(url);
         if (fileName === null) {
             return;
