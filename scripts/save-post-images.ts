@@ -19,6 +19,7 @@ export function saveImages() {
             }
             const client = getNotionClient(apiKey);
             const posts = await listPublishedPosts(client);
+            const urlsToSave: string[] = [];
             for (const post of posts) {
                 const name = post.properties.Name.title[0].plain_text;
                 const postDetails = await listPublishedPostByName(client, name);
@@ -28,14 +29,17 @@ export function saveImages() {
                 }
                 const postToDownload = postDetails[0];
                 const thumbnailUrl = postToDownload.properties.thumbnail.files[0].file.url;
-                await fetchAndWriteFile(thumbnailUrl);
+                // await fetchAndWriteFile(thumbnailUrl);
+                urlsToSave.push(thumbnailUrl);
                 const allBlocks = await listAllPostBlocks(client, postToDownload.id);
                 for (const block of allBlocks) {
                     if (block.type === "image" && block.image?.file.url) {
-                        await fetchAndWriteFile(block.image?.file.url)
+                        // await fetchAndWriteFile(block.image?.file.url)
+                        urlsToSave.push(block.image?.file.url)
                     }
                 }
             }
+            await Promise.all(urlsToSave.map(fetchAndWriteFile))
         }
     }
 }
