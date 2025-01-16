@@ -2,6 +2,7 @@
 	import Text from '$lib/components/Text.svelte';
 	import type { RecentPost } from '$lib/types/types';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
+	import ReadMore from '../ReadMore.svelte';
 
 	interface PostPreviewProps {
 		post: RecentPost;
@@ -29,17 +30,7 @@
 				>{post.title}</Text
 			>
 			<Text element="p" class="text-sm text-muted-foreground">{post.description}</Text>
-			<Text element="p" class="duration-400 flex items-center group-hover:text-secondary"
-				>Read more<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="duration-400 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 5l7 7-7 7" />
-				</svg></Text
-			>
+			<ReadMore/>
 		</div>
 	</div>
 </a>

@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { PostsResults } from '$lib/types/posts.js';
-
-	let { children, data } = $props();
+	let { children } = $props();
 </script>
 
 <div class="m-auto max-w-[800px] pb-10">
