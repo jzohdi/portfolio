@@ -19,7 +19,7 @@
 {#snippet headerImage()}
 	<div class="flex items-center justify-center overflow-hidden">
 		<enhanced:img
-			src="/static/images/pink_wig.png?w=468&h=627"
+			src="/static/images/compressed_pink_wig.jpeg?w=468&h=627"
 			alt="picture of me"
 			class="h-80 object-contain lg:h-full lg:w-full"
 			sizes="(min-width:1000px) 470px, (min-width:720px) 640px, (min-width:400px) 400px"

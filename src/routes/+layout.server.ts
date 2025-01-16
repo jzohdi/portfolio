@@ -1,12 +1,6 @@
 import type { NotionData, NotionResult } from '$lib/types/types';
-import { Client } from '@notionhq/client';
 import type { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
-import { NOTION_API_KEY, NOTION_DATABASE_ID } from '$env/static/private';
-import type { PostsQuery } from '$lib/types/posts';
-
-const notion = new Client({ auth: NOTION_API_KEY });
-const POSTS_DATABASE_ID = "16b216c9-d0ab-801d-9d5c-f899728f5d75";
-
+import { getPublishedPosts, getTextDatabase } from '$lib/notion/server';
 
 function parseNotionResponse(response: QueryDatabaseResponse, collector: NotionData) {
 	const results = response.results as NotionResult[];
@@ -43,33 +37,13 @@ function getContentByType(results: NotionResult[], type: 'p' | 'title' | 'title2
 export const prerender = true;
 
 async function loadHomePageText(collector: NotionData) {
-	const response = await notion.databases.query({
-		database_id: NOTION_DATABASE_ID
-	});
+	const response = await getTextDatabase();
 
 	return parseNotionResponse(response, collector);	
 }
 
 async function loadRecentPosts(collector: NotionData) {
-	const response = await notion.databases.query({
-		database_id: POSTS_DATABASE_ID,
-		sorts: [
-			{
-				property: "Publish Date",
-				direction: "descending"
-			}
-		],
-		filter: {
-			property: "Hidden",
-			checkbox: {
-				equals: false
-			}
-		}
-
-	}) as PostsQuery
-	const results = response.results.filter((result) => {
-		return result.properties['Publish Date'].date !== null
-	});
+	const results = await getPublishedPosts();
 	collector.recentPosts =  results.slice(0, 2).map((result) => {
 		return {
 			title: result.properties.Name.title[0].plain_text,

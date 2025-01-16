@@ -1,3 +1,5 @@
+export type NotionImageUseCase = "posts";
+
 export type NotionData = {
 	aboutme1: {
 		title: string;

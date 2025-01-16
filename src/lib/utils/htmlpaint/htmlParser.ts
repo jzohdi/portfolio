@@ -17,6 +17,8 @@ export async function parse(htmlContent: string): Promise<ParsedHtml> {
 	const firstPass = Array.from(doc.childNodes).flatMap((node) => {
 		return parseNode(node);
 	});
+	const styleTags = firstPass.filter((node): node is StyleNode => node?.type === 'style');
+	await appendStyles([...styleTags]);
 
 	const bodyNode = firstPass.filter((node) => node?.type === 'body')[0];
 	const parsed: ParsedHtml = {
@@ -30,35 +32,46 @@ export async function parse(htmlContent: string): Promise<ParsedHtml> {
 	return parsed;
 }
 function parseDocument(nodes: NodeListOf<ChildNode>, { iframe }: AstContext): AstNode[] {
-	return Array.from(nodes).map((child) => {
-		// debugger;
-		if (child.nodeType === Node.TEXT_NODE) {
-			return {
-				type: 'string',
-				textContent: child.textContent
-			};
-		}
-		if (child.nodeType === Node.ELEMENT_NODE) {
-			const element = child as HTMLElement;
-			const styles = iframe.contentWindow?.getComputedStyle(element);
-			const rect = element.getBoundingClientRect();
-			if (!styles) {
-				// TODO: telemetry
-				console.error('could not get styles from iframe for element:', element);
-				throw new Error('Failed to parseDocument.');
+	return Array.from(nodes)
+		.filter((child) => !getTagName(child).startsWith('script'))
+		.map((child) => {
+			// debugger;
+			if (child.nodeType === Node.TEXT_NODE) {
+				return {
+					type: 'string',
+					textContent: child.textContent
+				};
 			}
-			const beforeContent = iframe.contentWindow?.getComputedStyle(element, ':before').content;
-			return {
-				type: getType(child),
-				styles,
-				rect,
-				beforeContent,
-				children: parseDocument(child.childNodes, { iframe })
-			};
-		}
-		console.error('unsupported nodeType');
-		throw new Error('Failed to parseDocument');
-	});
+			if (child.nodeType === Node.ELEMENT_NODE) {
+				const element = child as HTMLElement;
+				const styles = iframe.contentWindow?.getComputedStyle(element);
+				const rect = element.getBoundingClientRect();
+				if (!styles) {
+					// TODO: telemetry
+					console.error('could not get styles from iframe for element:', element);
+					throw new Error('Failed to parseDocument.');
+				}
+				const beforeContent = iframe.contentWindow?.getComputedStyle(element, ':before').content;
+				return {
+					type: getType(child),
+					styles,
+					rect,
+					beforeContent,
+					children: parseDocument(child.childNodes, { iframe })
+				};
+			}
+			console.error('unsupported nodeType');
+			throw new Error('Failed to parseDocument');
+		});
+}
+
+function getTagName(child: ChildNode) {
+	if (child.nodeType === Node.ELEMENT_NODE) {
+		const element = child as HTMLElement;
+		const tagName = element.tagName.toLowerCase();
+		return tagName;
+	}
+	return '';
 }
 function getType(child: ChildNode) {
 	if (child.nodeType === Node.ELEMENT_NODE) {
@@ -66,8 +79,12 @@ function getType(child: ChildNode) {
 		const tagName = element.tagName.toLowerCase();
 		if (isSupportedTag(tagName)) {
 			return tagName;
+		} else {
+			console.log(tagName, child);
+			throw new Error('element tag not supported for parsing');
 		}
 	}
+	console.log(child);
 	throw new Error('element tag not supported for parsing');
 }
 // Helper function to extract attributes from an element
@@ -153,17 +170,125 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 	});
 }
 
-export function appendStyles(tree: ParsedHtml): Promise<HTMLStyleElement[]> {
-	return Promise.all(tree.headElements.filter((node): node is StyleNode => node.type==="style").map((node => {
-		return new Promise<HTMLStyleElement>((resolve) => {
-			const tag = document.createElement("style")
-			tag.innerHTML = node.content;
-			document.fonts.ready.then(() => {
-				resolve(tag)
-			})
-			document.head.appendChild(tag);
-			
-			return tag;
-		})
-	})));
+export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[]> {
+	return Promise.all(
+		styleNodes.map(
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			(_node) =>
+				new Promise<HTMLStyleElement>((resolve) => {
+					const tag = document.createElement('style');
+					// tag.type = "text/css";
+					tag.innerText = _node.content;
+					// resolve(tag);
+					// document.head.appendChild(tag);
+					resolve(tag)
+					// setTimeout(() => {
+					// 	resolve(tag);
+					// }, 100)
+					// tag.onload = () => {
+					// 	tag.onload = null;
+						// resolve(tag);
+					// };
+					// setTimeout(() => {
+					// 	if (tag.onload !== null) {
+					// 		tag.onload = null;
+					// 		resolve(tag);
+					// 	}
+					// }, 500);
+					// document.head.appendChild(tag);
+					// tag.innerHTML = node.content;
+					// resolve(tag);
+					// resolve(tag);
+					// extractContentToLoad(node.content).then((content) => {
+					// 	if (!content) {
+					// 		return resolve(tag);
+					// 	}
+	// 				const content = `	@font-face {
+	// 	font-family: 'Calibri';
+	// 	font-style: normal;
+	// 	font-weight: 400;
+	// 	src: url(/fonts/font.woff2) format('woff2');
+	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	// }
+	// /* latin */
+	// @font-face {
+	// 	font-family: 'Calibri';
+	// 	font-style: normal;
+	// 	font-weight: 700;
+	// 	src: url(/fonts/font_700.woff2) format('woff2');
+	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	// }`
+	// 					const fontFaceRegex = /@font-face\s*{[^}]*}/gi;
+	// 					const fontFaceBlocks = content.match(fontFaceRegex);
+	// 					if (fontFaceBlocks === null) {
+	// 						return resolve(tag);
+	// 					}
+	// 					const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
+	// 					loadFonts(parsedFonts).then(() => {
+	// 						resolve(tag);
+	// 					});
+	// 				// });
+				})
+		)
+	);
 }
+
+// async function extractContentToLoad(content: string): Promise<string> {
+// 	const pattern = /@import\s+url\(\s*(['"]?)(.*?)\1\s*\)/i;
+// 	const match = content.match(pattern);
+// 	try {
+// 		if (match) {
+// 			const url = match[2];
+// 			const result = await fetch(url);
+// 			const text = await result.text();
+// 			if (text.includes('@font-face')) {
+// 				return text;
+// 			}
+// 			return '';
+// 			// Output: https://themes.googleusercontent.com/fonts/css?kit=fpjTOVmNbO4Lz34iLyptLUXza5VhXqVC6o75Eld_V98
+// 		} else {
+// 			return '';
+// 		}
+// 	} catch (e) {
+// 		console.error(e);
+// 		return '';
+// 	}
+// }
+
+// async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
+// 	for (const font of fonts) {
+// 		if (font.fontFamily && font.srcUrl) {
+// 			const fontFace = new FontFace(
+// 				font.fontFamily,
+// 				`url(${font.srcUrl}) format('${font.format}')`,
+// 				{
+// 					style: font.fontStyle,
+// 					weight: font.fontWeight
+// 				}
+// 			);
+
+// 			try {
+// 				await fontFace.load();
+// 				document.fonts.add(fontFace);
+// 				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
+// 			} catch (error) {
+// 				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
+// 			}
+// 		}
+// 	}
+// }
+
+// function parseFontFaceBlock(block: string) {
+// 	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
+// 	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
+// 	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
+// 	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
+
+// 	return {
+// 		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
+// 		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
+// 		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
+// 		srcUrl: srcMatch ? srcMatch[1].trim() : null,
+// 		format: srcMatch ? srcMatch[2].trim() : null
+// 	};
+// }
