@@ -3,10 +3,10 @@
 	import Spacer from '$lib/components/Spacer.svelte';
 	import Text from '$lib/components/Text.svelte';
 	import type { ParsedBlock } from '$lib/notion/server';
-	import type { PostsResults } from '$lib/types/posts';
+	import type { PostsResult } from '$lib/types/posts';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
 
-	let { data }: { data: { blocks: ParsedBlock[]; post: PostsResults } } = $props();
+	let { data }: { data: { blocks: ParsedBlock[]; post: PostsResult } } = $props();
 	const post = data.post;
 	const title = post.properties.Name.title[0].plain_text;
 	const publishedDate = post.properties['Publish Date']?.date?.start;

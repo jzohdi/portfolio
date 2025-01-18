@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import type { PostsResults } from '$lib/types/posts';
+import type { PostsResult } from '$lib/types/posts';
 import type { NotionImageUseCase } from "$lib/types/types";
 import { getFileNameFrom } from './vite-helper';
 
@@ -11,12 +11,12 @@ export function getImageSrc(useCase: NotionImageUseCase, url: string) {
 	if (!url.startsWith("https://prod-files-secure.s3"))  {
 		return url;
 	}
-	return '/posts' + getFileNameFrom(url)
+	return `/${useCase}` + getFileNameFrom(url)
 }
 
 export type PostPreview = ReturnType<typeof getPostPreview>;
 
-export function getPostPreview(post: PostsResults) {
+export function getPostPreview(post: PostsResult) {
     const title = post.properties.Name.title[0].plain_text;
     const description = post.properties["SEO Description"].rich_text[0].plain_text;
     const thumbnail = post.properties.thumbnail.files[0].file.url;

@@ -2,15 +2,17 @@
 	import Row from '$lib/components/pages/about/Row.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';
 	import Text from '$lib/components/Text.svelte';
-	import type { NotionData } from '$lib/types/types';
+	import type { HomePageData } from '$lib/types/types';
 	import RenderedResume from '$lib/components/pages/about/RenderedResume.svelte';
 	import PostPreview from '$lib/components/pages/about/PostPreview.svelte';
+	import ProjectsGallery from '$lib/components/pages/projects/ProjectsGallery.svelte';
 
-	const { data }: { data: NotionData } = $props();
+	const { data }: { data: HomePageData } = $props();
 	const aboutme1 = data.aboutme1;
 	const aboutme2 = data.aboutme2;
 	const resume = data.resume;
 	const recentPosts = data.recentPosts;
+	const projects = data.projects;
 </script>
 
 <!-- =============== SECTION 1 ===================== -->
@@ -88,7 +90,9 @@
 <Spacer height={'10px'}></Spacer>
 <Row bp="lg" top="left" left={headerImage} right={aboutMe} />
 <Spacer height={'50px'}></Spacer>
-<Row bp="lg" top="left" left={resumeDescription} right={resumeRender} />
+<Row bp="md" top="right" left={resumeDescription} right={resumeRender} />
 <Spacer height={'50px'}></Spacer>
 <Row bp="md" header="Recent Posts" top="left" left={mostRecentPost} right={secondMostRecentPost} />
+<Spacer height={'50px'}></Spacer>
+<ProjectsGallery {projects} />
 <Spacer height={'100px'}></Spacer>

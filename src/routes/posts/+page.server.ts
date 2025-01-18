@@ -1,5 +1,5 @@
 import { getPublishedPosts } from "$lib/notion/server";
-import type { PostsResults } from "$lib/types/posts";
+import type { PostsResult } from "$lib/types/posts";
 import { getPostPreview } from "$lib/utils/svelte-helper";
 import type { PageServerLoad } from "./$types";
 
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async () => {
 };
 
 
-function extractRelventPageData(posts: PostsResults[]) {
+function extractRelventPageData(posts: PostsResult[]) {
     return posts.map(getPostPreview)
 }
 
