@@ -2,12 +2,22 @@ import { Client } from '@notionhq/client';
 import { NOTION_API_KEY, NOTION_DATABASE_ID } from '$env/static/private';
 import type { PostsQuery } from '$lib/types/posts';
 import type { PostBlock } from '$lib/types/blocks';
-import type { RichText } from '$lib/types/types';
+import type { NotionNumber, RichText } from '$lib/types/types';
 import { listAllPostBlocks, listPublishedPostByName, listPublishedPosts, listPublishedProjects} from './vite-build';
 
 const notion = new Client({ auth: NOTION_API_KEY });
 const POSTS_DATABASE_ID = "16b216c9-d0ab-801d-9d5c-f899728f5d75";
 
+interface TypeWithOrder {
+	properties: {
+		order: NotionNumber
+	}
+}
+
+export function sortByOrder(a: TypeWithOrder, b: TypeWithOrder) {
+	
+	return (a.properties?.order?.number ?? Number.MAX_SAFE_INTEGER) - (b.properties.order.number?? Number.MAX_SAFE_INTEGER)
+}
 
 export async function getPublishedPosts() {
     return listPublishedPosts(notion);

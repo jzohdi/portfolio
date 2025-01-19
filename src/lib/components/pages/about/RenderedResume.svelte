@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import {  setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
-	import { appendStyles, parse } from '$lib/utils/htmlpaint/htmlParser';
+	import { appendStylesAndLinks, parse } from '$lib/utils/htmlpaint/htmlParser';
 	import type { StyleNode } from '$lib/utils/htmlpaint/types';
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
@@ -49,6 +49,7 @@
 			const results = await fetch('/files/resume.html');
 			const htmlString = await results.text();
 			const tree = await parse(htmlString);
+			const headTags = await appendStylesAndLinks(tree.headElements);
 			const targetWidth = webglCanvas.getBoundingClientRect().width;
 			const { canvas, ctx, targetHeight } = setupCanvas(tree, targetWidth);
 
@@ -56,23 +57,16 @@
 			webglCanvas.height = targetHeight;
 
 			renderer = new WebGLCanvasRenderer(webglCanvas);
-			const base64String = await (await fetch("/files/resume.txt")).text();
-			const img = new Image();
-			// img.src = base64String;
 
-			// Draw the image onto the destination canvas after it loads
-			img.onload = () => {
-				ctx.drawImage(img, 0, 0);
-				if (renderer) {
-					renderer.render(canvas);
-					referrenceCanvas = canvas;
-				}
-			};
-			img.src = base64String;
-			// toCanvas(ctx, tree);
-			
+			toCanvas(ctx, tree);
+			renderer.render(canvas);
+			referrenceCanvas = canvas;
+
 			// clean up iframe and style tags that loaded fonts
 			document.body.removeChild(tree.iframe);
+			headTags.forEach((tag) => {
+				document.head.removeChild(tag);
+			})
 		}
 	});
 

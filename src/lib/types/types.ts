@@ -73,12 +73,14 @@ export interface TextProperties {
 	group: Group;
 	Text: Text;
 	Name: Name;
-	Order: {
-		id: string;
-		type: 'number';
-		number: null | number;
-	};
+	Order: NotionNumber
 }
+
+export interface NotionNumber {
+	id: string;
+	type: 'number';
+	number: null | number;
+};
 
 export interface Group {
 	id: string;

@@ -64,11 +64,11 @@
 						target="_blank"
 						class="flex w-fit items-center rounded-sm bg-secondary px-4 py-2 text-white"
 					>
-						Live <svg
+						See more <svg
 							width={20}
 							height={20}
 							xmlns="http://www.w3.org/2000/svg"
-							class={`stroke-white`}
+							class={`stroke-white group-hover:translate-x-1 transition-transform`}
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"

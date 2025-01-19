@@ -1,4 +1,4 @@
-import type { DatabaseQuery, NotionDatabaseEntry, RichText } from "./types";
+import type { DatabaseQuery, NotionDatabaseEntry, NotionNumber, RichText } from "./types";
 
 export type Project = {
     title: string;
@@ -34,6 +34,7 @@ export type ProjectResult = NotionDatabaseEntry<Properties>
     thumbnail: Thumbnail
     Name: Name
     source: Link
+    order: NotionNumber
   }
   
   export interface Published {

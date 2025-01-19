@@ -13,9 +13,8 @@ export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
 	if (!ctx) {
 		throw new Error("Canvas 2D not suppported.")
 	}
-	const widthScale = targetWidth / 552;
+	const widthScale = newCanvas.width / tree.rect.width // 552 // / tree.rect.width;
 	ctx.fillStyle = 'white';
-	// console.log({widthScale, new})
 	ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
 	ctx.scale(widthScale, widthScale);
 	return { aspectRatio, canvas: newCanvas, ctx, targetHeight }

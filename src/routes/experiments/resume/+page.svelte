@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Spacer from '$lib/components/Spacer.svelte';
 	import { calculateHeight, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
-	import { parse } from '$lib/utils/htmlpaint/htmlParser';
+	import { appendStylesAndLinks, parse } from '$lib/utils/htmlpaint/htmlParser';
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
 	import ThreeJsCube from '$lib/components/ThreeJsCube.svelte';
-	import RenderedResume from '$lib/components/pages/about/RenderedResume.svelte';
+	import type { LinkNode, StyleNode } from '$lib/utils/htmlpaint/types';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let textureCanvas: HTMLCanvasElement | null = null;
@@ -52,15 +52,18 @@
 			const results = await fetch('/files/resume.html');
 			const htmlString = await results.text();
 			const tree = await parse(htmlString);
+			const headTagsToRemove = await appendStylesAndLinks(tree.headElements);
 			const heightOfTree = calculateHeight(tree);
+			const targetWidth = webglCanvas.getBoundingClientRect().width;
 			const aspectRatio = heightOfTree / tree.rect.width;
 			// const { width, height } =
-			webglCanvas.width = 600;
-			webglCanvas.height = webglCanvas.width * aspectRatio;
+			webglCanvas.width = targetWidth;
+			const targetHeight = targetWidth * aspectRatio
+			webglCanvas.height = targetHeight;
 
 			const newCanvas = document.createElement('canvas');
-			newCanvas.width = webglCanvas.width * 2;
-			newCanvas.height = webglCanvas.height * 2;
+			newCanvas.width = targetWidth * 2;
+			newCanvas.height = targetHeight * 2;
 
 			renderer = new WebGLCanvasRenderer(webglCanvas);
 			const ctx = newCanvas.getContext('2d');
@@ -94,13 +97,12 @@
 					canvasForThreeJs.height
 				);
 			}
-			if (webglCanvasContainer) {
-				webglCanvasContainer.style.overflow = 'hidden';
-				webglCanvasContainer.style.height = `${containerHeight}px`;
-			}
 
-			document.body.removeChild(tree.iframe);
+			// document.body.removeChild(tree.iframe);
 			// Render 2D canvas to WebGL canvas
+			headTagsToRemove.forEach((tag) => {
+				document.head.removeChild(tag);
+			})
 			renderer.render(newCanvas);
 		}
 	});
@@ -121,16 +123,14 @@
 
 <div class="h-full w-full">
 	<!-- <canvas width={2048} height={4096} class="bg-white" bind:this={canvas}></canvas> -->
-	<div class="h-0 max-w-fit overflow-hidden rounded-sm bg-black" bind:this={webglCanvasContainer}>
-		<canvas
-			class="touch-none"
-			bind:this={webglCanvas}
-			on:wheel={zoomInWebgl}
-			on:mousemove={handleMouseMove}
-			on:mouseup={handleMouseUp}
-			on:mousedown={handleMouseDown}
-		></canvas>
-	</div>
+	<canvas
+		class="touch-none w-[90vw] max-w-[600px] bg-black"
+		bind:this={webglCanvas}
+		on:wheel={zoomInWebgl}
+		on:mousemove={handleMouseMove}
+		on:mouseup={handleMouseUp}
+		on:mousedown={handleMouseDown}
+	></canvas>
 	<Spacer height="100px"></Spacer>
 	{#if textureCanvas !== null}
 		<ThreeJsCube {textureCanvas} />

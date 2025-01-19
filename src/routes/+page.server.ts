@@ -1,6 +1,6 @@
 import type { HomePageData, TextResult } from '$lib/types/types';
 import type { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
-import { getPublishedPosts, getPublishedProjects, getTextDatabase } from '$lib/notion/server';
+import { getPublishedPosts, getPublishedProjects, getTextDatabase, sortByOrder } from '$lib/notion/server';
 
 function parseNotionResponse(response: QueryDatabaseResponse, collector: HomePageData) {
 	const results = response.results as TextResult[];
@@ -58,7 +58,7 @@ async function loadRecentPosts(collector: HomePageData) {
 
 async function loadProjects(collector: HomePageData) {
 	const results = await getPublishedProjects();
-	collector.projects = results.map((project) => {
+	collector.projects = results.sort(sortByOrder).map((project) => {
 		return {
 			title: project.properties.Name.title[0].plain_text,
 			description: project.properties.description.rich_text[0].plain_text,
