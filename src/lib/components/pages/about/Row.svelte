@@ -14,6 +14,32 @@ import type { Snippet } from 'svelte';
 	let { top, header, description, left, right, bp }: RowProps = $props();
 </script>
 
+{#snippet renderLeftRightLg(left: Snippet, right: Snippet, top: RowProps['top'])}
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+	<div class={`${top === "right" ? "order-2":  "lg:order-1"}`}>
+		{@render left()}
+	</div>
+	<div class={`${top === "right" ? "order-1":  "lg:order-2"}`}>
+		{@render right()}
+	</div>
+</div>	
+{/snippet}
+
+{#snippet renderLeftRightMd(left: Snippet, right: Snippet, top: RowProps['top'])}
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+	<div class={`${top === "right" ? "order-2":  "md:order-1"}`}>
+		{@render left()}
+	</div>
+	<div class={`${top === "right" ? "order-1":  "md:order-2"}`}>
+		{@render right()}
+	</div>
+</div>		
+{/snippet}
+
+{#snippet renderHeader(header: RowProps['header'])}
+	<Text class="w-full flex-1 lg:w-[50%] lg:text-right border-b-0" element="h2">{header}</Text>
+{/snippet}
+
 <section>
 	{#if header !== undefined}
 		<div class={`lg:pb-5 flex flex-row gap-5 ${top === 'right' ? 'flex-col-reverse lg:flex-row' : 'flex-wrap'}`}>
@@ -21,12 +47,11 @@ import type { Snippet } from 'svelte';
 			<Text class="w-full lg:w-[50%]" element="p">{description}</Text>
 		</div>
 	{/if}
-	<div class={`flex flex-row gap-5 ${top === 'right' ? 'flex-col-reverse lg:flex-row' : 'flex-wrap'}`}>
-		<div class={`w-full flex-1 ${bp === "lg" ? "lg:w-[50%]":  "md:w-[50%]"}`}>
-			{@render left()}
-		</div>
-		<div class={`w-full ${bp === "lg" ? "lg:w-[50%]":  "md:w-[50%]"}`}>
-			{@render right()}
-		</div>
-	</div>
+	{#if bp === "lg"}
+		{@render renderLeftRightLg(left, right, top)}
+	{:else}
+		{@render renderLeftRightMd(left, right, top)}		
+	{/if}
 </section>
+
+

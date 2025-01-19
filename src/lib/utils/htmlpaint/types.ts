@@ -12,7 +12,7 @@ export type TextRenderDetails = {
 	boundingWidth: number;
 };
 export type ParsedHtml = {
-	headElements: (MetaNode | StyleNode)[];
+	headElements: HeadNodes[];
 	body: BodyNode;
 	parsedBody: AstNode[];
 	rect: DOMRect;
@@ -45,10 +45,17 @@ export type MetaNode = {
 	attributes: Record<string, string>;
 };
 
+export type LinkNode = {
+	type: 'link';
+	attributes: Record<string, string>;
+};
+
 export type StyleNode = {
 	type: 'style';
 	content: string;
 };
+
+export type HeadNodes = LinkNode | MetaNode | StyleNode;
 
 export type BodyNode = {
 	type: 'body';
@@ -56,4 +63,4 @@ export type BodyNode = {
 	attributes: Record<string, string>;
 	children: NodeListOf<ChildNode>;
 };
-export type ParseNode = MetaNode | StyleNode | BodyNode;
+export type ParseNode = HeadNodes | BodyNode

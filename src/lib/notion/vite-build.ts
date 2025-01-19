@@ -1,5 +1,6 @@
 import type { PostBlock } from '$lib/types/blocks';
 import type { PostsQuery } from '$lib/types/posts';
+import type { ProjectsQuery } from '$lib/types/projects';
 import { Client } from '@notionhq/client';
 
 const POSTS_DATABASE_ID = "16b216c9-d0ab-801d-9d5c-f899728f5d75";
@@ -61,15 +62,38 @@ export async function listPublishedPostByName(notion: Client, name: string) {
 }
 
 export async function listAllPostBlocks(notion:Client, pageId: string): Promise<PostBlock[]> {
-	const blocks: PostBlock[] = [];
+	return fetchAll((cursor) => {
+		return notion.blocks.children.list({
+			block_id: pageId,
+			start_cursor: cursor,
+		  })
+	});
+}
+
+export const PROJECT_DATABASE = "17e216c9-d0ab-8048-9440-f138797d473f";
+
+export async function listPublishedProjects(notion: Client) {
+    const response = await notion.databases.query({
+		database_id: PROJECT_DATABASE,
+		filter: {
+			property: "published",
+			checkbox: {
+				equals: true
+			}
+		}
+
+	}) as ProjectsQuery;
+
+	return response.results.filter((result) => result.properties.published.checkbox === true);
+}
+
+async function fetchAll<T>(getter: (cursor?: string) => Promise<{ next_cursor: string | null; results: unknown[]}>) {
+	const blocks: T[] = [];
 	let cursor;
   
 	do {
-	  const response = await notion.blocks.children.list({
-		block_id: pageId,
-		start_cursor: cursor,
-	  });
-	  const results = response.results as PostBlock[];
+	  const response = await getter(cursor)
+	  const results = response.results as T[];
 	  blocks.push(...results);
 	  cursor = response.next_cursor;
 	} while (cursor);

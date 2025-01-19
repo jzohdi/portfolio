@@ -4,7 +4,7 @@ import {
 	type AstNode,
 	isSupportedTag,
 	type ParseNode,
-	type StyleNode
+	type HeadNodes
 } from './types';
 
 export async function parse(htmlContent: string): Promise<ParsedHtml> {
@@ -17,12 +17,10 @@ export async function parse(htmlContent: string): Promise<ParsedHtml> {
 	const firstPass = Array.from(doc.childNodes).flatMap((node) => {
 		return parseNode(node);
 	});
-	const styleTags = firstPass.filter((node): node is StyleNode => node?.type === 'style');
-	await appendStyles([...styleTags]);
 
 	const bodyNode = firstPass.filter((node) => node?.type === 'body')[0];
 	const parsed: ParsedHtml = {
-		headElements: firstPass.filter((node) => node?.type === 'meta' || node?.type === 'style'),
+		headElements: firstPass.filter((node): node is HeadNodes => node?.type !== 'body'),
 		body: bodyNode,
 		rect: iframe.contentDocument.body.getBoundingClientRect(),
 		parsedBody: parseDocument(bodyNode.children, { iframe }),
@@ -107,6 +105,12 @@ function parseNode(node: Node): ParseNode | ParseNode[] | null {
 					type: 'meta',
 					attributes: getAttributes(element)
 				};
+			case 'link': {
+				return {
+					type: 'link',
+					attributes: getAttributes(element)
+				};
+			}
 			case 'style':
 				return {
 					type: 'style',
@@ -159,136 +163,39 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
 			if (iframeDoc) {
 				iframeDoc.open();
+				iframeDoc.fonts.ready.then(() => {
+					resolve(iframe);
+				});
 				iframeDoc.write(htmlContent);
+
 				iframeDoc.close();
 			}
-
-			resolve(iframe);
 		};
 
 		document.body.appendChild(iframe);
 	});
 }
 
-export function appendStyles(styleNodes: StyleNode[]): Promise<HTMLStyleElement[]> {
+export function appendStylesAndLinks(headNodes: HeadNodes[]): Promise<HTMLStyleElement[]> {
 	return Promise.all(
-		styleNodes.map(
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(_node) =>
+		headNodes.filter((node) => node.type === "link" || node.type === "style").map(
+			(node) =>
 				new Promise<HTMLStyleElement>((resolve) => {
+					if (node.type === "link") {
+						const tag = document.createElement("link");
+						const tagAttributes = node.attributes
+						for (const attr in tagAttributes) {
+							tag.setAttribute(attr, tagAttributes[attr])
+						}
+						document.head.appendChild(tag);
+						return resolve(tag);
+					}
 					const tag = document.createElement('style');
-					// tag.type = "text/css";
-					tag.innerText = _node.content;
-					// resolve(tag);
-					// document.head.appendChild(tag);
-					resolve(tag)
-					// setTimeout(() => {
-					// 	resolve(tag);
-					// }, 100)
-					// tag.onload = () => {
-					// 	tag.onload = null;
-						// resolve(tag);
-					// };
-					// setTimeout(() => {
-					// 	if (tag.onload !== null) {
-					// 		tag.onload = null;
-					// 		resolve(tag);
-					// 	}
-					// }, 500);
-					// document.head.appendChild(tag);
-					// tag.innerHTML = node.content;
-					// resolve(tag);
-					// resolve(tag);
-					// extractContentToLoad(node.content).then((content) => {
-					// 	if (!content) {
-					// 		return resolve(tag);
-					// 	}
-	// 				const content = `	@font-face {
-	// 	font-family: 'Calibri';
-	// 	font-style: normal;
-	// 	font-weight: 400;
-	// 	src: url(/fonts/font.woff2) format('woff2');
-	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-	// }
-	// /* latin */
-	// @font-face {
-	// 	font-family: 'Calibri';
-	// 	font-style: normal;
-	// 	font-weight: 700;
-	// 	src: url(/fonts/font_700.woff2) format('woff2');
-	// 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-	// }`
-	// 					const fontFaceRegex = /@font-face\s*{[^}]*}/gi;
-	// 					const fontFaceBlocks = content.match(fontFaceRegex);
-	// 					if (fontFaceBlocks === null) {
-	// 						return resolve(tag);
-	// 					}
-	// 					const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
-	// 					loadFonts(parsedFonts).then(() => {
-	// 						resolve(tag);
-	// 					});
-	// 				// });
+					tag.type = "text/css";
+					tag.innerText = node.content;
+					document.head.appendChild(tag);
+					resolve(tag);
 				})
 		)
 	);
 }
-
-// async function extractContentToLoad(content: string): Promise<string> {
-// 	const pattern = /@import\s+url\(\s*(['"]?)(.*?)\1\s*\)/i;
-// 	const match = content.match(pattern);
-// 	try {
-// 		if (match) {
-// 			const url = match[2];
-// 			const result = await fetch(url);
-// 			const text = await result.text();
-// 			if (text.includes('@font-face')) {
-// 				return text;
-// 			}
-// 			return '';
-// 			// Output: https://themes.googleusercontent.com/fonts/css?kit=fpjTOVmNbO4Lz34iLyptLUXza5VhXqVC6o75Eld_V98
-// 		} else {
-// 			return '';
-// 		}
-// 	} catch (e) {
-// 		console.error(e);
-// 		return '';
-// 	}
-// }
-
-// async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
-// 	for (const font of fonts) {
-// 		if (font.fontFamily && font.srcUrl) {
-// 			const fontFace = new FontFace(
-// 				font.fontFamily,
-// 				`url(${font.srcUrl}) format('${font.format}')`,
-// 				{
-// 					style: font.fontStyle,
-// 					weight: font.fontWeight
-// 				}
-// 			);
-
-// 			try {
-// 				await fontFace.load();
-// 				document.fonts.add(fontFace);
-// 				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
-// 			} catch (error) {
-// 				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
-// 			}
-// 		}
-// 	}
-// }
-
-// function parseFontFaceBlock(block: string) {
-// 	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
-// 	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
-// 	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
-// 	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
-
-// 	return {
-// 		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
-// 		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
-// 		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
-// 		srcUrl: srcMatch ? srcMatch[1].trim() : null,
-// 		format: srcMatch ? srcMatch[2].trim() : null
-// 	};
-// }

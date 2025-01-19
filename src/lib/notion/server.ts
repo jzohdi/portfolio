@@ -3,7 +3,7 @@ import { NOTION_API_KEY, NOTION_DATABASE_ID } from '$env/static/private';
 import type { PostsQuery } from '$lib/types/posts';
 import type { PostBlock } from '$lib/types/blocks';
 import type { RichText } from '$lib/types/types';
-import { listAllPostBlocks, listPublishedPostByName, listPublishedPosts } from './vite-build';
+import { listAllPostBlocks, listPublishedPostByName, listPublishedPosts, listPublishedProjects} from './vite-build';
 
 const notion = new Client({ auth: NOTION_API_KEY });
 const POSTS_DATABASE_ID = "16b216c9-d0ab-801d-9d5c-f899728f5d75";
@@ -11,6 +11,10 @@ const POSTS_DATABASE_ID = "16b216c9-d0ab-801d-9d5c-f899728f5d75";
 
 export async function getPublishedPosts() {
     return listPublishedPosts(notion);
+}
+
+export async function getPublishedProjects() {
+	return listPublishedProjects(notion);
 }
 
 export async function getPublishedPostBySlug(slug: string) {

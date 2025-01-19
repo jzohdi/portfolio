@@ -3,11 +3,13 @@ import {
 	getNotionClient,
 	listAllPostBlocks,
 	listPublishedPostByName,
-	listPublishedPosts
+	listPublishedPosts,
+	listPublishedProjects
 } from '../src/lib/notion/vite-build';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
+import type { NotionImageUseCase } from '$lib/types/types';
 // import sharp from "sharp";
 
 export function saveImages() {
@@ -43,12 +45,15 @@ export function saveImages() {
 					}
 				}
 			}
-			await Promise.all(urlsToSave.map(fetchAndWriteFile));
+			await Promise.all(urlsToSave.map((url) => fetchAndWriteFile(url, "posts")));
+			
+			const projectUrlsToSave = (await listPublishedProjects(client)).map((p) => p.properties.thumbnail.files[0].file.url);
+			await Promise.all(projectUrlsToSave.map(url => fetchAndWriteFile(url, "projects")))
 		}
 	};
 }
 
-async function fetchAndWriteFile(url: string) {
+async function fetchAndWriteFile(url: string, useCase: NotionImageUseCase) {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
@@ -61,7 +66,7 @@ async function fetchAndWriteFile(url: string) {
 		if (fileName === null) {
 			return;
 		}
-		const filePath = path.join(__dirname, '../', 'static', 'posts', fileName);
+		const filePath = path.join(__dirname, '../', 'static', useCase, fileName);
 		const dir = path.dirname(filePath);
 		if (!fs.existsSync(dir)) {
 			fs.mkdirSync(dir, { recursive: true });
@@ -80,7 +85,7 @@ async function resizeToTargetSize(buffer: Buffer, targetSizeKB: number): Promise
 	}
 
 	return compress(buffer, targetSizeBytes);
-}
+} 
 
 async function compress(buffer: Buffer, targetSizeBytes: number): Promise<Buffer> {
 	const quality = 85; // Starting quality

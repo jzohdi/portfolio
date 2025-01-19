@@ -1,9 +1,10 @@
-import type { NotionData, NotionResult } from '$lib/types/types';
+import type { HomePageData, TextResult } from '$lib/types/types';
 import type { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
-import { getPublishedPosts, getTextDatabase } from '$lib/notion/server';
+import { getPublishedPosts, getPublishedProjects, getTextDatabase } from '$lib/notion/server';
+import { sortByOrder } from '$lib/notion/helper';
 
-function parseNotionResponse(response: QueryDatabaseResponse, collector: NotionData) {
-	const results = response.results as NotionResult[];
+function parseNotionResponse(response: QueryDatabaseResponse, collector: HomePageData) {
+	const results = response.results as TextResult[];
 	const aboutme1Content = results.filter((r) => r.properties.group.select?.name === 'aboutme1');
 	const aboutme2Content = results.filter((r) => r.properties.group.select?.name === 'aboutme2');
 	const resumeContent = results.filter((r) => r.properties.group.select?.name === 'resume');
@@ -25,7 +26,7 @@ function parseNotionResponse(response: QueryDatabaseResponse, collector: NotionD
 	return collector;
 }
 
-function getContentByType(results: NotionResult[], type: 'p' | 'title' | 'title2' | 'li') {
+function getContentByType(results: TextResult[], type: 'p' | 'title' | 'title2' | 'li') {
 	return results
 		.filter((c) => c.properties?.Name.title[0].text.content === type)
 		.sort((a, b) => {
@@ -36,13 +37,13 @@ function getContentByType(results: NotionResult[], type: 'p' | 'title' | 'title2
 
 export const prerender = true;
 
-async function loadHomePageText(collector: NotionData) {
+async function loadHomePageText(collector: HomePageData) {
 	const response = await getTextDatabase();
 
 	return parseNotionResponse(response, collector);	
 }
 
-async function loadRecentPosts(collector: NotionData) {
+async function loadRecentPosts(collector: HomePageData) {
 	const results = await getPublishedPosts();
 	collector.recentPosts =  results.slice(0, 2).map((result) => {
 		return {
@@ -56,8 +57,21 @@ async function loadRecentPosts(collector: NotionData) {
 	return collector;
 }
 
-export const load: () => Promise<NotionData> = async () => {
-	const collector: NotionData = {
+async function loadProjects(collector: HomePageData) {
+	const results = await getPublishedProjects();
+	collector.projects = results.sort(sortByOrder).map((project) => {
+		return {
+			title: project.properties.Name.title[0].plain_text,
+			description: project.properties.description.rich_text[0].plain_text,
+			thumbnail: project.properties.thumbnail.files[0].file.url,
+			link: project.properties.link.url,
+			source: project.properties.source.url
+		}
+	})
+}
+
+export const load: () => Promise<HomePageData> = async () => {
+	const collector: HomePageData = {
 		aboutme1: {
 			title: "",
 			p: []
@@ -72,8 +86,9 @@ export const load: () => Promise<NotionData> = async () => {
 			title2: "",
 			li: []
 		},
-		recentPosts: []
+		recentPosts: [],
+		projects: []
 	};
-	await Promise.all([loadHomePageText(collector), loadRecentPosts(collector)])
+	await Promise.all([loadHomePageText(collector), loadRecentPosts(collector), loadProjects(collector)])
 	return collector;
 };

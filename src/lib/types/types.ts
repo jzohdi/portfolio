@@ -1,6 +1,8 @@
-export type NotionImageUseCase = "posts";
+import type { Project } from "./projects";
 
-export type NotionData = {
+export type NotionImageUseCase = "posts" | "projects";
+
+export type HomePageData = {
 	aboutme1: {
 		title: string;
 		p: string[];
@@ -16,7 +18,18 @@ export type NotionData = {
 		li: string[];
 	};
 	recentPosts: RecentPost[]
+	projects: Project[]
 };
+
+export interface DatabaseQuery<ResultType> {
+    object: string
+    results: Array<ResultType>
+    next_cursor: string | null;
+    has_more: boolean
+    type: string
+    page_or_database: never;
+    request_id: string
+  }
 
 export interface RecentPost {
 	title: string;
@@ -25,7 +38,7 @@ export interface RecentPost {
 	previewImage: string;
 }
 
-export interface NotionResult {
+export interface NotionDatabaseEntry<Properties> {
 	object: string;
 	id: string;
 	created_time: string;
@@ -38,6 +51,8 @@ export interface NotionResult {
 	properties: Properties;
 	url: string;
 }
+
+export type TextResult = NotionDatabaseEntry<TextProperties>;
 
 export interface CreatedBy {
 	object: string;
@@ -54,16 +69,18 @@ export interface Parent {
 	database_id: string;
 }
 
-export interface Properties {
+export interface TextProperties {
 	group: Group;
 	Text: Text;
 	Name: Name;
-	Order: {
-		id: string;
-		type: 'number';
-		number: null | number;
-	};
+	Order: NotionNumber
 }
+
+export interface NotionNumber {
+	id: string;
+	type: 'number';
+	number: null | number;
+};
 
 export interface Group {
 	id: string;
