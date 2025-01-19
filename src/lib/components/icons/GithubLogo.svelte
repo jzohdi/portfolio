@@ -1,11 +1,12 @@
-<script>
-    const { width, height} = $props();
+<script lang="ts">
+    const { width, height, class: classNames }: { width: number; height: number; class?: string} = $props();
 </script>
 
 <svg
 	width={width}
 	height={height}
 	viewBox="0 0 98 96"
+	class={classNames}
 	style={`width:${width}px; height: ${height}px;`}
 	xmlns="http://www.w3.org/2000/svg"
 	><path

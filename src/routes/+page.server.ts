@@ -1,6 +1,7 @@
 import type { HomePageData, TextResult } from '$lib/types/types';
 import type { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
-import { getPublishedPosts, getPublishedProjects, getTextDatabase, sortByOrder } from '$lib/notion/server';
+import { getPublishedPosts, getPublishedProjects, getTextDatabase } from '$lib/notion/server';
+import { sortByOrder } from '$lib/notion/helper';
 
 function parseNotionResponse(response: QueryDatabaseResponse, collector: HomePageData) {
 	const results = response.results as TextResult[];

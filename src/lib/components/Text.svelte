@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type {} from 'svelte/elements';
 
 	type Element = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'ul' | 'li';
 	interface TextSpecificProps {
