@@ -70,6 +70,6 @@
 <canvas
 	width={canvasDimensions.width}
 	height={canvasDimensions.height}
-	class="h-[calc(100vh - 60px)] fixed top-[60px] w-full sm:top-[72px] sm:h-[calc(100vh-72px)]"
+	class="h-[calc(100vh - 60px)] fixed left-0 top-[60px] w-full sm:top-[72px] sm:h-[calc(100vh-72px)]"
 	bind:this={canvas}
 ></canvas>
