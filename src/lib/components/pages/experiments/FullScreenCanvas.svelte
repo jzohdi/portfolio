@@ -17,15 +17,36 @@
 
 	let canvas: HTMLCanvasElement | null = null;
 	let cleanupFn: (() => void) | null = null;
+	let device: GPUDevice, context: GPUCanvasContext, format: GPUTextureFormat;
 
 	function resizeCanvas(canvas: HTMLCanvasElement) {
 		const devicePixelRatio = window.devicePixelRatio || 1;
-		const width = canvas.offsetWidth;
-		const height = canvas.offsetHeight;
+		const width = window.innerWidth;
+		const height = window.innerHeight - 60;
 		canvasDimensions = {
 			width: Math.floor(width * devicePixelRatio),
 			height: Math.floor(height * devicePixelRatio)
 		};
+	}
+
+	async function loadExample() {
+		if (cleanupFn) {
+			cleanupFn(); // Cleanup previous example
+		}
+
+		cleanupFn = await animationFunction(device, context, format);
+	}
+	function resizeCanvasAndConfigure() {
+		if (!canvas) {
+			return;
+		}
+		resizeCanvas(canvas);
+		context.configure({
+			device,
+			format: navigator.gpu.getPreferredCanvasFormat(),
+			alphaMode: 'premultiplied'
+		});
+		loadExample();
 	}
 
 	onMount(async () => {
@@ -33,33 +54,17 @@
 			return;
 		}
 		resizeCanvas(canvas);
-		const { device, context, format } = await initWebGPU(canvas);
-
-		function resizeCanvasAndConfigure() {
-			if (!canvas) {
-				return;
-			}
-			resizeCanvas(canvas);
-			context.configure({
-				device,
-				format: navigator.gpu.getPreferredCanvasFormat(),
-				alphaMode: 'premultiplied'
-			});
-			loadExample();
-		}
-
-		async function loadExample() {
-			if (cleanupFn) {
-				cleanupFn(); // Cleanup previous example
-			}
-
-			cleanupFn = await animationFunction(device, context, format);
-		}
+		const init = await initWebGPU(canvas);
+		device = init.device;
+		context = init.context;
+		format = init.format;
 
 		// Configure initially
 		resizeCanvasAndConfigure();
+		window.onresize = () => {
+			resizeCanvasAndConfigure();
+		};
 	});
-
 	onDestroy(() => {
 		if (cleanupFn !== null) {
 			cleanupFn(); // Cleanup previous example
@@ -70,6 +75,6 @@
 <canvas
 	width={canvasDimensions.width}
 	height={canvasDimensions.height}
-	class="h-[calc(100vh - 60px)] fixed left-0 top-[60px] w-full sm:top-[72px] sm:h-[calc(100vh-72px)]"
+	class="fixed left-[20px] top-[60px] w-[100vw] sm:top-[72px]"
 	bind:this={canvas}
 ></canvas>
