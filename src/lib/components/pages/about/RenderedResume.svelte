@@ -121,7 +121,7 @@
 	>
 	<CollapsibleContent>
 		<canvas
-			class="w-full touch-none rounded-md border-2 border-zinc-200 bg-black"
+			class="w-full rounded-md border-2 border-zinc-200 bg-black"
 			bind:this={webglCanvas}
 			onwheel={zoomInWebgl}
 			onmousemove={handleMouseMove}
