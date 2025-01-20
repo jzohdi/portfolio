@@ -126,24 +126,15 @@
 	});
 </script>
 
-<Collapsible class="w-full">
-	<CollapsibleTrigger
-		class="w-full rounded bg-pink-700 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300"
-		>Render Resume</CollapsibleTrigger
-	>
-	<CollapsibleContent>
-		<!-- svelte-ignore event_directive_deprecated -->
-		<canvas
-			class="w-full rounded-md border-2 border-zinc-200 bg-black"
-			bind:this={webglCanvas}
-			onwheel={zoomInWebgl}
-			use:pan={() => ({ delay: 0 })}
-			onpan={panHandler}
-			onpandown={panDown}
-			onpanup={handleMouseUp}
-			use:pinch={() => ({})}
-			onpinch={handlePinch}
-		></canvas>
-		<div class="text-center">Zoom + Pan</div>
-	</CollapsibleContent>
-</Collapsible>
+<canvas
+	class="w-full rounded-md border-2 border-zinc-200 bg-black"
+	bind:this={webglCanvas}
+	onwheel={zoomInWebgl}
+	use:pan={() => ({ delay: 0 })}
+	onpan={panHandler}
+	onpandown={panDown}
+	onpanup={handleMouseUp}
+	use:pinch={() => ({})}
+	onpinch={handlePinch}
+></canvas>
+<div class="text-center">Zoom + Pan</div>
