@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
+	import { getCtx, setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
 	import {
 		appendStylesAndLinks,
 		createIframeWithHtml,
@@ -114,8 +114,37 @@
 		renderer = new WebGLCanvasRenderer(webglCanvas);
 
 		toCanvas(ctx, tree);
+
 		renderer.render(canvas);
 		referrenceCanvas = canvas;
+	}
+
+	async function loadCanvasDataFromServer(
+		targetCtx: CanvasRenderingContext2D,
+		targetWidth: number,
+		targetHeight: number
+	) {
+		try {
+			const response = await fetch('/files/canvas-data-3.bin');
+			if (!response.ok) {
+				throw new Error('Failed to fetch canvas data');
+			}
+
+			// Get the ArrayBuffer from the response
+			const buffer = await response.arrayBuffer();
+
+			// Create a new Uint8ClampedArray from the buffer
+			const imageDataArray = new Uint8ClampedArray(buffer);
+			console.log({ len: imageDataArray.length });
+			// Create a new ImageData object
+			const imageData = new ImageData(imageDataArray, targetWidth, targetHeight);
+
+			// Put the image data back onto the canvas
+			targetCtx.putImageData(imageData, 0, 0);
+			console.log('Canvas data restored successfully.');
+		} catch (error) {
+			console.error('Error loading canvas data:', error);
+		}
 	}
 
 	$effect(() => {
@@ -126,15 +155,24 @@
 	});
 </script>
 
-<canvas
-	class="w-full rounded-md border-2 border-zinc-200 bg-black"
-	bind:this={webglCanvas}
-	onwheel={zoomInWebgl}
-	use:pan={() => ({ delay: 0 })}
-	onpan={panHandler}
-	onpandown={panDown}
-	onpanup={handleMouseUp}
-	use:pinch={() => ({})}
-	onpinch={handlePinch}
-></canvas>
-<div class="text-center">Zoom + Pan</div>
+<Collapsible class="w-full">
+	<CollapsibleTrigger
+		class="w-full rounded bg-pink-700 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300"
+		>Render Resume</CollapsibleTrigger
+	>
+	<CollapsibleContent>
+		<!-- svelte-ignore event_directive_deprecated -->
+		<canvas
+			class="w-full rounded-md border-2 border-zinc-200 bg-black"
+			bind:this={webglCanvas}
+			onwheel={zoomInWebgl}
+			use:pan={() => ({ delay: 0 })}
+			onpan={panHandler}
+			onpandown={panDown}
+			onpanup={handleMouseUp}
+			use:pinch={() => ({})}
+			onpinch={handlePinch}
+		></canvas>
+		<div class="text-center">Zoom + Pan</div>
+	</CollapsibleContent>
+</Collapsible>

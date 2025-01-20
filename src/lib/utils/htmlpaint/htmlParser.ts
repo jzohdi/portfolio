@@ -158,11 +158,11 @@ function parseHead(headEle: HTMLHeadElement) {
 export function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 	return new Promise((resolve) => {
 		const iframe = document.createElement('iframe');
-		iframe.width = '2048px';
-		iframe.height = '4096px';
+		iframe.width = '1024px';
+		iframe.height = '2048px';
 		iframe.style.position = 'absolute';
-		iframe.style.left = '-9999px';
-		iframe.style.top = '-9999px';
+		iframe.style.left = '0px';
+		iframe.style.top = '0px';
 
 		iframe.onload = () => {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;

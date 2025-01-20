@@ -3,21 +3,31 @@ import { renderTextRow } from './renderTextRow';
 import { type AstNode, type ElementNode, type ParsedHtml, type TextNode, type Word } from './types';
 
 export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
-	const heightOfTree = calculateHeight(tree)
+	const heightOfTree = calculateHeight(tree);
 	const aspectRatio = heightOfTree / tree.rect.width;
-	const targetHeight = targetWidth * aspectRatio
+	const targetHeight = targetWidth * aspectRatio;
 	const newCanvas = document.createElement('canvas');
 	newCanvas.width = targetWidth * 2;
 	newCanvas.height = targetHeight * 2;
 	const ctx = newCanvas.getContext('2d');
 	if (!ctx) {
-		throw new Error("Canvas 2D not suppported.")
+		throw new Error('Canvas 2D not suppported.');
 	}
-	const widthScale = newCanvas.width / tree.rect.width // 552 // / tree.rect.width;
+	const widthScale = newCanvas.width / tree.rect.width; // 552 // / tree.rect.width;
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
 	ctx.scale(widthScale, widthScale);
-	return { aspectRatio, canvas: newCanvas, ctx, targetHeight }
+	return { aspectRatio, canvas: newCanvas, ctx, targetHeight };
+}
+
+export function getCtx(canvas: HTMLCanvasElement, fillWidth: number, fillHeight: number) {
+	const ctx = canvas.getContext('2d');
+	if (!ctx) {
+		throw new Error('Canvas 2D not suppported.');
+	}
+	ctx.fillStyle = 'white';
+	ctx.fillRect(0, 0, fillWidth, fillHeight);
+	return ctx;
 }
 
 function getStartingPosition(tree: ParsedHtml) {
