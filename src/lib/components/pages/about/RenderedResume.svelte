@@ -164,6 +164,6 @@
 			use:pinch={() => ({})}
 			onpinch={handlePinch}
 		></canvas>
-		<div class="hidden text-center sm:block">Zoom + Pan</div>
+		<div class="text-center">Zoom + Pan</div>
 	</CollapsibleContent>
 </Collapsible>
