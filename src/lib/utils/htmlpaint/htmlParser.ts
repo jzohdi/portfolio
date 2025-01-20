@@ -163,11 +163,13 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
 			if (iframeDoc) {
 				iframeDoc.open();
-				iframeDoc.fonts.ready.then(() => {
+				// iframeDoc.fonts.ready.then(() => {
+				// 	resolve(iframe);
+				// });
+				setTimeout(() => {
 					resolve(iframe);
-				});
+				}, 100);
 				iframeDoc.write(htmlContent);
-
 				iframeDoc.close();
 			}
 		};
@@ -178,24 +180,81 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 
 export function appendStylesAndLinks(headNodes: HeadNodes[]): Promise<HTMLStyleElement[]> {
 	return Promise.all(
-		headNodes.filter((node) => node.type === "link" || node.type === "style").map(
-			(node) =>
-				new Promise<HTMLStyleElement>((resolve) => {
-					if (node.type === "link") {
-						const tag = document.createElement("link");
-						const tagAttributes = node.attributes
-						for (const attr in tagAttributes) {
-							tag.setAttribute(attr, tagAttributes[attr])
+		headNodes
+			.filter((node) => node.type === 'link' || node.type === 'style')
+			.map(
+				(node) =>
+					new Promise<HTMLStyleElement>((resolve) => {
+						if (node.type === 'link') {
+							const tag = document.createElement('link');
+							const tagAttributes = node.attributes;
+							for (const attr in tagAttributes) {
+								tag.setAttribute(attr, tagAttributes[attr]);
+							}
+							const href = tagAttributes['href'];
+							if (href && href.includes('css')) {
+								fetchAndLoad(href).then(() => {
+									resolve(tag);
+								});
+							} else {
+								resolve(tag);
+							}
+							document.head.appendChild(tag);
+							return;
 						}
+						const tag = document.createElement('style');
+						tag.innerText = node.content;
 						document.head.appendChild(tag);
-						return resolve(tag);
-					}
-					const tag = document.createElement('style');
-					tag.type = "text/css";
-					tag.innerText = node.content;
-					document.head.appendChild(tag);
-					resolve(tag);
-				})
-		)
+						resolve(tag);
+					})
+			)
 	);
+}
+
+async function fetchAndLoad(href: string) {
+	const response = await fetch(href);
+	const content = await response.text();
+	const fontFaceRegex = /\/\* latin \*\/\n@font-face\s*{[^}]*}/gi;
+	const fontFaceBlocks = content.match(fontFaceRegex);
+	if (fontFaceBlocks === null) {
+		return;
+	}
+	const parsedFonts = fontFaceBlocks.map(parseFontFaceBlock);
+	await loadFonts(parsedFonts);
+	return;
+}
+
+async function loadFonts(fonts: ReturnType<typeof parseFontFaceBlock>[]) {
+	for (const font of fonts) {
+		if (font.fontFamily && font.srcUrl) {
+			const fontFace = new FontFace(
+				font.fontFamily,
+				`url(${font.srcUrl}) format('${font.format}')`,
+				{
+					style: font.fontStyle,
+					weight: font.fontWeight
+				}
+			);
+			try {
+				await fontFace.load();
+				document.fonts.add(fontFace);
+				console.log(`Loaded font: ${font.fontFamily} (${font.fontWeight})`);
+			} catch (error) {
+				console.error(`Failed to load font: ${font.fontFamily} (${font.fontWeight})`, error);
+			}
+		}
+	}
+}
+function parseFontFaceBlock(block: string) {
+	const fontFamilyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?;/i);
+	const fontStyleMatch = block.match(/font-style:\s*([^;]+);/i);
+	const fontWeightMatch = block.match(/font-weight:\s*([^;]+);/i);
+	const srcMatch = block.match(/src:\s*url\(([^)]+)\)\s*format\(['"]?([^)'"]+)['"]?\);/i);
+	return {
+		fontFamily: fontFamilyMatch ? fontFamilyMatch[1].trim() : null,
+		fontStyle: fontStyleMatch ? fontStyleMatch[1].trim() : 'normal',
+		fontWeight: fontWeightMatch ? fontWeightMatch[1].trim() : '400',
+		srcUrl: srcMatch ? srcMatch[1].trim() : null,
+		format: srcMatch ? srcMatch[2].trim() : null
+	};
 }

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import {  setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
+	import { setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
 	import { appendStylesAndLinks, parse } from '$lib/utils/htmlpaint/htmlParser';
 	import type { StyleNode } from '$lib/utils/htmlpaint/types';
 	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
+	import type { TouchEventHandler } from 'svelte/elements';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = null;
@@ -12,14 +13,23 @@
 	let iframe: HTMLIFrameElement | null = null;
 	let isDragging = false;
 
-	function handleMouseDown(event: MouseEvent) {
+	function handleMouseDown(event: { clientX: number; clientY: number }) {
 		isDragging = true;
 		if (renderer) {
 			renderer.startPan(event);
 		}
 	}
+	const handleTouchDown: TouchEventHandler<HTMLCanvasElement> = (e) => {
+		const touch = e.touches[0];
+		handleMouseDown(touch);
+	};
 
-	function handleMouseMove(event: MouseEvent) {
+	const handleTouchStart: TouchEventHandler<HTMLCanvasElement> = (e) => {
+		const touch = e.touches[0];
+		handleMouseMove(touch);
+	};
+
+	function handleMouseMove(event: { clientX: number; clientY: number }) {
 		if (isDragging && renderer && referrenceCanvas) {
 			renderer.panTo(event);
 			renderer.clear();
@@ -66,7 +76,7 @@
 			document.body.removeChild(tree.iframe);
 			headTags.forEach((tag) => {
 				document.head.removeChild(tag);
-			})
+			});
 		}
 	});
 
@@ -85,10 +95,13 @@
 </script>
 
 <canvas
-	class="w-full touch-none bg-black border-2 border-zinc-200 rounded-md"
+	class="w-full touch-none rounded-md border-2 border-zinc-200 bg-black"
 	bind:this={webglCanvas}
-	on:wheel={zoomInWebgl}
-	on:mousemove={handleMouseMove}
-	on:mouseup={handleMouseUp}
-	on:mousedown={handleMouseDown}
+	onwheel={zoomInWebgl}
+	onmousemove={handleMouseMove}
+	onmouseup={handleMouseUp}
+	onmousedown={handleMouseDown}
+	ontouchstart={handleTouchDown}
+	ontouchend={handleMouseUp}
+	ontouchmove={handleTouchStart}
 ></canvas>

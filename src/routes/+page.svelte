@@ -7,6 +7,13 @@
 	import PostPreview from '$lib/components/pages/about/PostPreview.svelte';
 	import ProjectsGallery from '$lib/components/pages/projects/ProjectsGallery.svelte';
 	import ExperimentsGallery from '$lib/components/pages/experiments/ExperimentsGallery.svelte';
+	import ATag from '$lib/components/ATag.svelte';
+	import TextWithLinks from '$lib/components/TextWithLinks.svelte';
+	import {
+		Collapsible,
+		CollapsibleContent,
+		CollapsibleTrigger
+	} from '$lib/components/ui/collapsible';
 
 	const { data }: { data: HomePageData } = $props();
 	const aboutme1 = data.aboutme1;
@@ -37,7 +44,7 @@
 	<Text element="h2" class="bold text-primary">{aboutme1.title}</Text>
 	{#each aboutme1.p as content}
 		<Text element="p" class="text-sm">
-			{content}
+			<TextWithLinks {content} />
 		</Text>
 	{/each}
 	<Spacer height="20px"></Spacer>
@@ -57,10 +64,10 @@
 		<Text element="h2">{resume.title}</Text>
 		{#each resume.p as content}
 			<Text element="p" class="text-sm">
-				{content}
+				<TextWithLinks {content} />
 			</Text>
 		{/each}
-		<Spacer height="10px"></Spacer>
+		<Spacer height="25px"></Spacer>
 		<Text element="h3">{resume.title2}</Text>
 		<Text element="ul" class="rounded-md border-2 shadow-md">
 			{#each resume.li as content}
@@ -74,8 +81,17 @@
 {/snippet}
 
 {#snippet resumeRender()}
-	<div class="flex h-full w-full items-center justify-center">
-		<RenderedResume />
+	<div class="h-full w-full pb-8 pt-0 md:pb-8 md:pt-14">
+		<Collapsible class="w-full">
+			<CollapsibleTrigger
+				class="w-full rounded bg-pink-700 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300"
+				>Render Resume</CollapsibleTrigger
+			>
+			<CollapsibleContent>
+				<RenderedResume />
+				<div class="text-center">Zoom + Pan</div>
+			</CollapsibleContent>
+		</Collapsible>
 	</div>
 {/snippet}
 

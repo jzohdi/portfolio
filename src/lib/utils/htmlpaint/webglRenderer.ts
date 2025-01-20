@@ -103,7 +103,7 @@ class ZoomState {
 		}
 	}
 
-	panTo(e: MouseEvent, canvas: HTMLCanvasElement) {
+	panTo(e: { clientX: number; clientY: number }, canvas: HTMLCanvasElement) {
 		// const [x, y] = this.getMousePos(e, canvas);
 
 		// Scale the movement based on current zoom level
@@ -123,7 +123,7 @@ class ZoomState {
 		this.panPosition = [e.clientX, e.clientY];
 	}
 
-	startPan(e: MouseEvent) {
+	startPan(e: { clientX: number; clientY: number }) {
 		this.panPosition = [e.clientX, e.clientY];
 	}
 
@@ -266,11 +266,11 @@ export class WebGLCanvasRenderer {
 		this.zoomState.handleZoom(e, this.canvas);
 	}
 
-	panTo(e: MouseEvent) {
+	panTo(e: { clientX: number; clientY: number }) {
 		this.zoomState.panTo(e, this.canvas);
 	}
 
-	startPan(e: MouseEvent) {
+	startPan(e: { clientX: number; clientY: number }) {
 		this.zoomState.startPan(e);
 	}
 }

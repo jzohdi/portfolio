@@ -79,7 +79,7 @@
 			/>
 		</div>
 		<div
-			class="absolute bottom-0 left-0 flex h-6 w-full justify-center border-t-2 bg-white transition-all group-hover:h-10 group-hover:border-secondary group-hover:text-secondary"
+			class="absolute bottom-0 left-0 flex h-6 w-full justify-center border-t-2 bg-white text-zinc-700 transition-all group-hover:h-10 group-hover:border-secondary group-hover:text-secondary"
 		>
 			Show Details
 		</div>
