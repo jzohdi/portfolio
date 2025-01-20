@@ -1,6 +1,7 @@
 import { getFileNameFrom } from '../src/lib/utils/vite-helper';
 import {
 	getNotionClient,
+	listAllExperiments,
 	listAllPostBlocks,
 	listPublishedPostByName,
 	listPublishedPosts,
@@ -9,7 +10,8 @@ import {
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import type { NotionImageUseCase } from '$lib/types/types';
+import type { NotionImageUseCase } from '../src/lib/types/types';
+import { extractFileUrl } from '../src/lib/notion/helper';
 // import sharp from "sharp";
 
 export function saveImages() {
@@ -45,10 +47,17 @@ export function saveImages() {
 					}
 				}
 			}
-			await Promise.all(urlsToSave.map((url) => fetchAndWriteFile(url, "posts")));
-			
-			const projectUrlsToSave = (await listPublishedProjects(client)).map((p) => p.properties.thumbnail.files[0].file.url);
-			await Promise.all(projectUrlsToSave.map(url => fetchAndWriteFile(url, "projects")))
+			await Promise.all(urlsToSave.map((url) => fetchAndWriteFile(url, 'posts')));
+
+			const projectUrlsToSave = (await listPublishedProjects(client)).map((p) =>
+				extractFileUrl(p.properties.thumbnail)
+			);
+			await Promise.all(projectUrlsToSave.map((url) => fetchAndWriteFile(url, 'projects')));
+
+			const experimentUrlsToSave = (await listAllExperiments(client)).map((p) =>
+				extractFileUrl(p.properties.thumbnail)
+			);
+			await Promise.all(experimentUrlsToSave.map((url) => fetchAndWriteFile(url, 'experiments')));
 		}
 	};
 }
@@ -85,7 +94,7 @@ async function resizeToTargetSize(buffer: Buffer, targetSizeKB: number): Promise
 	}
 
 	return compress(buffer, targetSizeBytes);
-} 
+}
 
 async function compress(buffer: Buffer, targetSizeBytes: number): Promise<Buffer> {
 	const quality = 85; // Starting quality
@@ -102,10 +111,10 @@ async function compress(buffer: Buffer, targetSizeBytes: number): Promise<Buffer
 			// If the buffer is still too large, reduce dimensions
 			if (sharpBuffer.length > targetSizeBytes) {
 				const metadata = await sharp(sharpBuffer).metadata();
-                if (!metadata || !metadata.width || !metadata.height) {
-                    console.error("Something went wrong resizing, returning original")
-                    return buffer;
-                }
+				if (!metadata || !metadata.width || !metadata.height) {
+					console.error('Something went wrong resizing, returning original');
+					return buffer;
+				}
 				width = Math.floor(metadata.width * 0.9); // Reduce width by 10%
 				height = Math.floor(metadata.height * 0.9); // Reduce height by 10%
 			}
@@ -130,17 +139,17 @@ async function compress(buffer: Buffer, targetSizeBytes: number): Promise<Buffer
 //       let width = null; // Starting width (null means original width)
 //       let height = null; // Starting height (null means original height)
 //       let buffer = await sharp(inputPath).toBuffer();
-  
+
 //       while (buffer.length > targetSizeBytes) {
 //         // Adjust quality
 //         // quality -= 10;
-  
+
 //         // Resize image with the current quality
 //         buffer = await sharp(inputPath)
 //           .resize(width, height)
 //           .jpeg({ quality })
 //           .toBuffer();
-  
+
 //         // If the buffer is still too large, reduce dimensions
 //         if (buffer.length > targetSizeBytes) {
 //           const metadata = await sharp(buffer).metadata();
@@ -151,7 +160,7 @@ async function compress(buffer: Buffer, targetSizeBytes: number): Promise<Buffer
 //           height = Math.floor(metadata.height * 0.9); // Reduce height by 10%
 //         }
 //       }
-  
+
 //       // Save the processed image
 //       await sharp(buffer).jpeg().toFile(outputPath);
 //       console.log(`Image resized to ${buffer.length / 1024} KB and saved to ${outputPath}`);

@@ -1,6 +1,7 @@
-import type { Project } from "./projects";
+import type { Experiment } from './experiments';
+import type { Project } from './projects';
 
-export type NotionImageUseCase = "posts" | "projects";
+export type NotionImageUseCase = 'posts' | 'projects' | 'experiments';
 
 export type HomePageData = {
 	aboutme1: {
@@ -17,19 +18,20 @@ export type HomePageData = {
 		title2: string;
 		li: string[];
 	};
-	recentPosts: RecentPost[]
-	projects: Project[]
+	recentPosts: RecentPost[];
+	projects: Project[];
+	experiments: Experiment[];
 };
 
 export interface DatabaseQuery<ResultType> {
-    object: string
-    results: Array<ResultType>
-    next_cursor: string | null;
-    has_more: boolean
-    type: string
-    page_or_database: never;
-    request_id: string
-  }
+	object: string;
+	results: Array<ResultType>;
+	next_cursor: string | null;
+	has_more: boolean;
+	type: string;
+	page_or_database: never;
+	request_id: string;
+}
 
 export interface RecentPost {
 	title: string;
@@ -54,6 +56,26 @@ export interface NotionDatabaseEntry<Properties> {
 
 export type TextResult = NotionDatabaseEntry<TextProperties>;
 
+export interface Thumbnail {
+	id: string;
+	type: string;
+	files: File[];
+}
+
+export interface CommonName {
+	id: string;
+	type: string;
+	title: Title[];
+}
+
+export interface Title {
+	type: string;
+	text: Text2;
+	annotations: Annotations2;
+	plain_text: string;
+	href: string | null;
+}
+
 export interface CreatedBy {
 	object: string;
 	id: string;
@@ -73,14 +95,14 @@ export interface TextProperties {
 	group: Group;
 	Text: Text;
 	Name: Name;
-	Order: NotionNumber
+	Order: NotionNumber;
 }
 
 export interface NotionNumber {
 	id: string;
 	type: 'number';
 	number: null | number;
-};
+}
 
 export interface Group {
 	id: string;
@@ -144,4 +166,21 @@ export interface Annotations2 {
 	underline: boolean;
 	code: boolean;
 	color: string;
+}
+
+export interface File {
+	name: string;
+	type: string;
+	file: File2;
+}
+
+export interface File2 {
+	url: string;
+	expiry_time: string;
+}
+
+export interface CommonDescription {
+	id: string;
+	type: string;
+	rich_text: Array<RichText>;
 }
