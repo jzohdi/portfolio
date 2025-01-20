@@ -57,7 +57,7 @@
 				<Button variant="outline" class="sm:hidden" onclick={handleOpenPreview}>Show Preview</Button
 				>
 				<a
-					href={experiment.path}
+					href={'/experiments/' + experiment.path}
 					class="flex w-fit items-center rounded-sm bg-secondary px-4 py-2 text-white"
 				>
 					Go <span class="hidden sm:inline-block">To Page</span>

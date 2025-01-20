@@ -21,7 +21,7 @@
 				title={experiment.title}
 				thumbnailSrc={getImageSrc('experiments', experiment.thumbnail)}
 				description={experiment.description}
-				link={experiment.path}
+				link={'/experiments/' + experiment.path}
 				action="go"
 			/>
 		{/each}
