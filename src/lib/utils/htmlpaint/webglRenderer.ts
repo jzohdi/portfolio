@@ -22,6 +22,8 @@ const fragmentShaderSource = `
   }
 `;
 
+export type ZoomEventParams = Pick<WheelEvent, 'clientX' | 'clientY' | 'preventDefault' | 'deltaY'>;
+
 function denormalizeGlCoords([normX, normY]: [number, number], rect: DOMRect): [number, number] {
 	const maxCanvasX = rect.width / 2;
 	const minCanvasX = -maxCanvasX;
@@ -64,7 +66,7 @@ class ZoomState {
 
 	constructor() {}
 
-	handleZoom(e: WheelEvent, canvas: HTMLCanvasElement) {
+	handleZoom(e: ZoomEventParams, canvas: HTMLCanvasElement) {
 		// const [mouseX, mouseY] = this.getMousePos(e, canvas);
 		const rect = canvas.getBoundingClientRect();
 		const maxCanvasX = rect.width / 2;
@@ -262,7 +264,7 @@ export class WebGLCanvasRenderer {
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 	}
 
-	handleZoom(e: WheelEvent) {
+	handleZoom(e: ZoomEventParams) {
 		this.zoomState.handleZoom(e, this.canvas);
 	}
 

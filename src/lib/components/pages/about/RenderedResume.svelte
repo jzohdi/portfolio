@@ -3,17 +3,22 @@
 	import {
 		appendStylesAndLinks,
 		createIframeWithHtml,
-		parse,
 		parseIframe
 	} from '$lib/utils/htmlpaint/htmlParser';
-	import { WebGLCanvasRenderer } from '$lib/utils/htmlpaint/webglRenderer';
+	import { WebGLCanvasRenderer, type ZoomEventParams } from '$lib/utils/htmlpaint/webglRenderer';
 	import { onDestroy, onMount } from 'svelte';
-	import type { TouchEventHandler } from 'svelte/elements';
 	import {
 		Collapsible,
 		CollapsibleContent,
 		CollapsibleTrigger
 	} from '$lib/components/ui/collapsible';
+	import {
+		pan,
+		pinch,
+		type PanCustomEvent,
+		type GestureCustomEvent,
+		type PinchCustomEvent
+	} from 'svelte-gestures';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = $state(null);
@@ -28,15 +33,16 @@
 			renderer.startPan(event);
 		}
 	}
-	const handleTouchDown: TouchEventHandler<HTMLCanvasElement> = (e) => {
-		const touch = e.touches[0];
-		handleMouseDown(touch);
-	};
+	function panHandler(event: PanCustomEvent) {
+		const x = event.detail.x;
+		const y = event.detail.y;
+		handleMouseMove({ clientX: x, clientY: y });
+	}
 
-	const handleTouchStart: TouchEventHandler<HTMLCanvasElement> = (e) => {
-		const touch = e.touches[0];
-		handleMouseMove(touch);
-	};
+	function panDown(gestureEvent: GestureCustomEvent) {
+		const { x, y } = gestureEvent.detail;
+		handleMouseDown({ clientX: x, clientY: y });
+	}
 
 	function handleMouseMove(event: { clientX: number; clientY: number }) {
 		if (isDragging && renderer && referrenceCanvas) {
@@ -76,13 +82,19 @@
 		iframe = await createIframeWithHtml(htmlString);
 	});
 
-	function zoomInWebgl(event: WheelEvent) {
+	function zoomInWebgl(event: ZoomEventParams) {
 		event.preventDefault();
 		if (renderer && referrenceCanvas) {
 			renderer.handleZoom(event);
 			renderer.clear();
 			renderer.render(referrenceCanvas);
 		}
+	}
+
+	function handlePinch(event: PinchCustomEvent) {
+		const { center, scale } = event.detail;
+		const { x, y } = center;
+		zoomInWebgl({ preventDefault: event.preventDefault, clientX: x, clientY: y, deltaY: scale });
 	}
 
 	async function completeRenderResume(
@@ -120,16 +132,17 @@
 		>Render Resume</CollapsibleTrigger
 	>
 	<CollapsibleContent>
+		<!-- svelte-ignore event_directive_deprecated -->
 		<canvas
 			class="w-full rounded-md border-2 border-zinc-200 bg-black"
 			bind:this={webglCanvas}
 			onwheel={zoomInWebgl}
-			onmousemove={handleMouseMove}
-			onmouseup={handleMouseUp}
-			onmousedown={handleMouseDown}
-			ontouchstart={handleTouchDown}
-			ontouchend={handleMouseUp}
-			ontouchmove={handleTouchStart}
+			use:pan={() => ({ delay: 0 })}
+			onpan={panHandler}
+			onpandown={panDown}
+			onpanup={handleMouseUp}
+			use:pinch={() => ({})}
+			onpinch={handlePinch}
 		></canvas>
 		<div class="text-center">Zoom + Pan</div>
 	</CollapsibleContent>
