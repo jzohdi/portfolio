@@ -161,8 +161,8 @@ export function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameEle
 		iframe.width = '1024px';
 		iframe.height = '2048px';
 		iframe.style.position = 'absolute';
-		iframe.style.left = '0px';
-		iframe.style.top = '0px';
+		iframe.style.left = '-9999px';
+		iframe.style.top = '-9999px';
 
 		iframe.onload = () => {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
@@ -170,12 +170,36 @@ export function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameEle
 				iframeDoc.open();
 				iframeDoc.write(htmlContent);
 				iframeDoc.close();
+				adjustSizeOfDocument(iframeDoc);
+				// iframeDoc.body.style.minWidth = '568.8pt';
 			}
 			resolve(iframe);
 		};
 
 		document.body.appendChild(iframe);
 	});
+}
+
+export function adjustSize(iframe: HTMLIFrameElement) {
+	const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+	if (iframeDoc) {
+		adjustSizeOfDocument(iframeDoc);
+	}
+}
+
+function adjustSizeOfDocument(iframeDoc: Document) {
+	const githubTag = iframeDoc.querySelectorAll('.c32.c2')[1];
+	const initialX = githubTag.getBoundingClientRect().x;
+	const initialMinWidth = iframeDoc.body.style.minWidth;
+	for (let i = 512; i < 2000; i++) {
+		iframeDoc.body.style.minWidth = `${i}px`;
+		const newX = githubTag.getBoundingClientRect().x;
+		if (newX > initialX) {
+			return;
+		}
+	}
+
+	iframeDoc.body.style.minWidth = initialMinWidth;
 }
 
 export function appendStylesAndLinks(

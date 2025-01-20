@@ -7,6 +7,7 @@ export function setupCanvas(tree: ParsedHtml, targetWidth: number) {
 	const aspectRatio = heightOfTree / tree.rect.width;
 	const targetHeight = targetWidth * aspectRatio;
 	const newCanvas = document.createElement('canvas');
+
 	newCanvas.width = targetWidth * 2;
 	newCanvas.height = targetHeight * 2;
 	const ctx = newCanvas.getContext('2d');

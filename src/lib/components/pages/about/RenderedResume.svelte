@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getCtx, setupCanvas, toCanvas } from '$lib/utils/htmlpaint/htmlpaint';
 	import {
+		adjustSize,
 		appendStylesAndLinks,
 		createIframeWithHtml,
 		parseIframe
@@ -19,6 +20,7 @@
 		type GestureCustomEvent,
 		type PinchCustomEvent
 	} from 'svelte-gestures';
+	import { isMobileDevice } from '$lib/utils/window';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = $state(null);
@@ -83,7 +85,11 @@
 	});
 
 	function zoomInWebgl(event: ZoomEventParams) {
-		event.preventDefault();
+		// allow to scroll past on mobile
+		if (!isMobileDevice()) {
+			event.preventDefault();
+		}
+		console.log(event.deltaY);
 		if (renderer && referrenceCanvas) {
 			renderer.handleZoom(event);
 			renderer.clear();
@@ -91,16 +97,26 @@
 		}
 	}
 
+	let lastScale = 1;
+
 	function handlePinch(event: PinchCustomEvent) {
 		const { center, scale } = event.detail;
 		const { x, y } = center;
-		zoomInWebgl({ preventDefault: event.preventDefault, clientX: x, clientY: y, deltaY: scale });
+		if (webglCanvas) {
+			const previousHeight = webglCanvas.height * lastScale;
+			const newHeight = webglCanvas.height * scale; // if this scale is larger need to be a negative deltaY
+			let deltaY = previousHeight - newHeight; // if newHeight is large will be negative
+			lastScale = scale;
+			zoomInWebgl({ preventDefault: event.preventDefault, clientX: x, clientY: y, deltaY });
+		}
 	}
 
 	async function completeRenderResume(
 		referrenceIframe: HTMLIFrameElement,
-		webglCanvas: HTMLCanvasElement
+		webglCanvas: HTMLCanvasElement,
+		didRetry?: boolean
 	) {
+		adjustSize(referrenceIframe);
 		const tree = await parseIframe(referrenceIframe);
 		if (appenedToHead.length === 0) {
 			appenedToHead = await appendStylesAndLinks(tree.headElements);
@@ -117,33 +133,8 @@
 
 		renderer.render(canvas);
 		referrenceCanvas = canvas;
-	}
-
-	async function loadCanvasDataFromServer(
-		targetCtx: CanvasRenderingContext2D,
-		targetWidth: number,
-		targetHeight: number
-	) {
-		try {
-			const response = await fetch('/files/canvas-data-3.bin');
-			if (!response.ok) {
-				throw new Error('Failed to fetch canvas data');
-			}
-
-			// Get the ArrayBuffer from the response
-			const buffer = await response.arrayBuffer();
-
-			// Create a new Uint8ClampedArray from the buffer
-			const imageDataArray = new Uint8ClampedArray(buffer);
-			console.log({ len: imageDataArray.length });
-			// Create a new ImageData object
-			const imageData = new ImageData(imageDataArray, targetWidth, targetHeight);
-
-			// Put the image data back onto the canvas
-			targetCtx.putImageData(imageData, 0, 0);
-			console.log('Canvas data restored successfully.');
-		} catch (error) {
-			console.error('Error loading canvas data:', error);
+		if (isMobileDevice() && !didRetry) {
+			completeRenderResume(referrenceIframe, webglCanvas, true);
 		}
 	}
 
@@ -173,6 +164,6 @@
 			use:pinch={() => ({})}
 			onpinch={handlePinch}
 		></canvas>
-		<div class="text-center">Zoom + Pan</div>
+		<div class="hidden text-center sm:block">Zoom + Pan</div>
 	</CollapsibleContent>
 </Collapsible>
