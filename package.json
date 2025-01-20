@@ -44,13 +44,13 @@
 	},
 	"dependencies": {
 		"@notionhq/client": "^2.2.15",
-		"@skeletonlabs/skeleton": "^2.10.4",
 		"@sveltejs/adapter-vercel": "^5.4.8",
 		"@t3-oss/env-nextjs": "^0.11.1",
 		"@tailwindcss/container-queries": "^0.1.1",
 		"@tailwindcss/typography": "^0.5.15",
 		"highlight.js": "^11.11.1",
 		"mode-watcher": "^0.5.0",
+		"svhighlight": "^0.7.1",
 		"three": "^0.172.0",
 		"zod": "^3.24.1"
 	}

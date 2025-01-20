@@ -7,8 +7,7 @@ import {
 	type HeadNodes
 } from './types';
 
-export async function parse(htmlContent: string): Promise<ParsedHtml> {
-	const iframe = await createIframeWithHtml(htmlContent);
+export async function parseIframe(iframe: HTMLIFrameElement) {
 	const doc = iframe.contentDocument;
 
 	if (!doc) {
@@ -29,6 +28,12 @@ export async function parse(htmlContent: string): Promise<ParsedHtml> {
 	// document.body.removeChild(iframe);
 	return parsed;
 }
+
+export async function parse(htmlContent: string): Promise<ParsedHtml> {
+	const iframe = await createIframeWithHtml(htmlContent);
+	return parseIframe(iframe);
+}
+
 function parseDocument(nodes: NodeListOf<ChildNode>, { iframe }: AstContext): AstNode[] {
 	return Array.from(nodes)
 		.filter((child) => !getTagName(child).startsWith('script'))
@@ -150,7 +155,7 @@ function parseHead(headEle: HTMLHeadElement) {
 	}
 	return results;
 }
-function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
+export function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 	return new Promise((resolve) => {
 		const iframe = document.createElement('iframe');
 		iframe.width = '1024px';
@@ -163,28 +168,25 @@ function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameElement> {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
 			if (iframeDoc) {
 				iframeDoc.open();
-				// iframeDoc.fonts.ready.then(() => {
-				// 	resolve(iframe);
-				// });
-				setTimeout(() => {
-					resolve(iframe);
-				}, 100);
 				iframeDoc.write(htmlContent);
 				iframeDoc.close();
 			}
+			resolve(iframe);
 		};
 
 		document.body.appendChild(iframe);
 	});
 }
 
-export function appendStylesAndLinks(headNodes: HeadNodes[]): Promise<HTMLStyleElement[]> {
+export function appendStylesAndLinks(
+	headNodes: HeadNodes[]
+): Promise<(HTMLStyleElement | HTMLLinkElement)[]> {
 	return Promise.all(
 		headNodes
 			.filter((node) => node.type === 'link' || node.type === 'style')
 			.map(
 				(node) =>
-					new Promise<HTMLStyleElement>((resolve) => {
+					new Promise<HTMLStyleElement | HTMLLinkElement>((resolve) => {
 						if (node.type === 'link') {
 							const tag = document.createElement('link');
 							const tagAttributes = node.attributes;

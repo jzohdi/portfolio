@@ -58,7 +58,7 @@
 			const aspectRatio = heightOfTree / tree.rect.width;
 			// const { width, height } =
 			webglCanvas.width = targetWidth;
-			const targetHeight = targetWidth * aspectRatio
+			const targetHeight = targetWidth * aspectRatio;
 			webglCanvas.height = targetHeight;
 
 			const newCanvas = document.createElement('canvas');
@@ -102,7 +102,7 @@
 			// Render 2D canvas to WebGL canvas
 			headTagsToRemove.forEach((tag) => {
 				document.head.removeChild(tag);
-			})
+			});
 			renderer.render(newCanvas);
 		}
 	});
@@ -122,9 +122,8 @@
 </script>
 
 <div class="h-full w-full">
-	<!-- <canvas width={2048} height={4096} class="bg-white" bind:this={canvas}></canvas> -->
 	<canvas
-		class="touch-none w-[90vw] max-w-[600px] bg-black"
+		class="w-[90vw] max-w-[600px] touch-none bg-black"
 		bind:this={webglCanvas}
 		on:wheel={zoomInWebgl}
 		on:mousemove={handleMouseMove}

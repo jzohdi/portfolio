@@ -9,7 +9,6 @@
 	const posts = data.posts as PostPreview[];
 </script>
 
-<!-- Define the snippet with a parameter 'product' -->
 {#snippet postPreview(post: PostPreview)}
 	<a href={`/posts/${post.slug}`} class="group">
 		<Text element="h2" class="duration-400 font-bold group-hover:text-secondary">{post.title}</Text>

@@ -12,12 +12,12 @@
 		if (!container) {
 			return;
 		}
-		
+
 		const aspectRatio = textureCanvas.width / textureCanvas.height;
 		const targetWidth = container.getBoundingClientRect().width;
-	
-		container.style.height = targetWidth + "px";
-		container.style.width = (targetWidth * aspectRatio) + "px";
+
+		container.style.height = targetWidth + 'px';
+		container.style.width = targetWidth * aspectRatio + 'px';
 		// === THREE.JS SETUP ===
 
 		// Scene
@@ -122,11 +122,7 @@
 	});
 </script>
 
-<!-- Container for the Three.js canvas -->
-<div
-	bind:this={container}
-	class="three-container w-full"
-></div>
+<div bind:this={container} class="three-container w-full"></div>
 
 <style>
 	/* Ensure the container takes the full size of its parent */

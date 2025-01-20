@@ -18,7 +18,6 @@
 </script>
 
 <div class="container mx-auto flex items-center justify-between p-4">
-	<!-- Logo -->
 	<div class="flex items-center">
 		<span class="ml-2 text-xl font-bold">Jake Zohdi</span>
 		<span class="ml-3 text-lg text-secondary">Developer</span>
@@ -27,12 +26,10 @@
 			target="_blank"
 			aria-label="open-github"
 			class="ml-2 dark:fill-white"
-			>
-			<GithubLogo width={24} height={24}/>
-			</a
 		>
+			<GithubLogo width={24} height={24} />
+		</a>
 	</div>
-	<!-- Navigation Links -->
 	<nav class="hidden items-center space-x-6 md:flex">
 		{#each menuItems as { href, label }}
 			<a
@@ -43,7 +40,6 @@
 		{/each}
 		<LightDarkToggle />
 	</nav>
-	<!-- Mobile Menu Button -->
 	<button
 		class="text-gray-600 hover:text-secondary focus:outline-none md:hidden"
 		aria-label="Toggle menu"
@@ -65,14 +61,13 @@
 		</svg>
 	</button>
 </div>
-<!-- Mobile Navigation Menu -->
+
 {#if isMenuOpen}
 	<nav
 		class="fixed right-0 top-[64px] z-50 h-[calc(100vh-64px)] w-64 bg-white shadow-lg dark:bg-gray-900 md:hidden"
 		transition:fly={{ x: 300, duration: 300, opacity: 1 }}
 	>
 		<div class="flex h-full flex-col">
-			<!-- Navigation Links -->
 			<div class="flex-1 py-4">
 				{#each menuItems as { href, label }}
 					<a
@@ -85,8 +80,6 @@
 					</a>
 				{/each}
 			</div>
-
-			<!-- Bottom Section with Theme Toggle -->
 			<div class="border-t border-gray-200 p-4 dark:border-gray-700">
 				<div class="flex items-center justify-between px-2">
 					<span class="text-sm text-gray-600 dark:text-gray-400">Theme</span>

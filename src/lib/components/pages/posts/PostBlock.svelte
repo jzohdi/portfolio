@@ -1,15 +1,13 @@
 <script lang="ts">
 	import Text from '$lib/components/Text.svelte';
 	import type { ParsedElement } from '$lib/notion/server';
-	import { CodeBlock } from '@skeletonlabs/skeleton';
-	import hljs from 'highlight.js';
-	// import 'highlight.js/styles/github-dark.min.css';
-	import { storeHighlightJs } from '@skeletonlabs/skeleton';
+	import 'highlight.js/styles/github-dark.min.css';
+	import { CodeBlock } from 'svhighlight';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';
 	import { isValidUrl } from '$lib/utils/vite-helper';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
-	storeHighlightJs.set(hljs);
+	import ATag from '$lib/components/ATag.svelte';
 
 	const { block } = $props();
 	const data = block as ParsedElement;
@@ -18,11 +16,7 @@
 {#if data.type === 'paragraph'}
 	{#if isValidUrl(data.content)}
 		<div>
-			<a
-				class="cursor-pointer text-blue-500 visited:text-purple-600 hover:text-blue-700 hover:underline active:text-blue-800"
-				href={data.content}
-				target="_blank">{data.content}</a
-			>
+			<ATag class="break-all" href={data.content}>{data.content}</ATag>
 		</div>
 	{:else}
 		<Text element="p">{data.content}</Text>
@@ -39,9 +33,9 @@
 	</ol>
 {:else if data.type === 'code'}
 	<Spacer height="10px"></Spacer>
-	<div class="bg-slate-900 p-4 text-white">
-		<CodeBlock language={data.language} code={data.code} lineNumbers={true} />
-	</div>
+	<!-- <div class="bg-slate-900 p-4 text-white"> -->
+	<CodeBlock language={data.language} code={data.code} />
+	<!-- </div> -->
 	<Spacer height="10px"></Spacer>
 {:else if data.type === 'image'}
 	<LazyImage imageUrl={getImageSrc('posts', data.url)} />
