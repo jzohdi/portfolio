@@ -36,7 +36,7 @@
 	<Text element="li" class="text-sm">Published: {publishedDate}</Text>
 	<Text element="li" class="text-sm">Last Edit: {editDate}</Text>
 </section>
-<Spacer height="50px" />
+<Spacer height="10px" />
 
 {#each data.blocks as block}
 	<PostBlock {block}></PostBlock>

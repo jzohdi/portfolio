@@ -15,7 +15,7 @@
 		h2: 'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0',
 		h3: 'scroll-m-20 text-2xl font-semibold tracking-tight',
 		h4: 'scroll-m-20 text-xl font-semibold tracking-tight',
-		p: 'break-all leading-7 [&:not(:first-child)]:mt-6',
+		p: 'leading-7 [&:not(:first-child)]:mt-6',
 		ul: 'my-6 ml-1 list-disc [&>li]:mt-2',
 		li: '[&:not(:first-child)]:mt-4'
 	} as const;

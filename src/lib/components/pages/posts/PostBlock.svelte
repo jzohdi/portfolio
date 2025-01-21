@@ -16,10 +16,10 @@
 {#if data.type === 'paragraph'}
 	{#if isValidUrl(data.content)}
 		<div>
-			<ATag class="break-all" href={data.content}>{data.content}</ATag>
+			<ATag class="!break-all" href={data.content}>{data.content}</ATag>
 		</div>
 	{:else}
-		<Text element="p">{data.content}</Text>
+		<Text element="p" class="break-words">{@html data.content}</Text>
 	{/if}
 {:else if data.type === 'h2'}
 	<Text element="h2">{data.content}</Text>
