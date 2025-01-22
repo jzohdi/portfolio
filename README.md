@@ -8,7 +8,7 @@
 - improve react draw docs
 - create package to webgl render water effects (based on mindful draw water)
 - use sudoku solver to create simple mini sudoku page, use wasm to connect to C code
-
+- sqlite cache for notion queries - json files
 
 ## Post ideas
 

@@ -19,13 +19,22 @@
 	let cleanupFn: (() => void) | null = null;
 	let device: GPUDevice, context: GPUCanvasContext, format: GPUTextureFormat;
 
+	function getScreenDimensions() {
+		if (window.screen?.width > 0) {
+			return { width: window.screen.width, height: window.screen.height };
+		}
+		return {
+			width: window.innerWidth,
+			height: window.innerHeight
+		};
+	}
+
 	function resizeCanvas(canvas: HTMLCanvasElement) {
 		const devicePixelRatio = window.devicePixelRatio || 1;
-		const width = window.innerWidth;
-		const height = window.innerHeight - 60;
+		const { width, height } = getScreenDimensions();
 		canvasDimensions = {
 			width: Math.floor(width * devicePixelRatio),
-			height: Math.floor(height * devicePixelRatio)
+			height: Math.floor((height - 60) * devicePixelRatio)
 		};
 	}
 
