@@ -1,11 +1,31 @@
 <script lang="ts">
-	let { children } = $props();
+	import ErrorAnimation from '$lib/components/ErrorAnimation.svelte';
+	import ExperimentsSideBar from '$lib/components/pages/experiments/ExperimentsSideBar.svelte';
+
+	let { children, data } = $props();
+	let error: { message: string } | null = $state(null);
+	let reset = $state(() => {});
+
+	const experiments = data.experiments;
+	function onerror(e: unknown, r: () => void) {
+		error = e as { message: string };
+		const message = error.message.split('\n')[0];
+		console.log({ message });
+		reset = r;
+	}
+
+	function tryGetErrorMessage() {
+		try {
+			return error?.message.split('\n')[0];
+		} catch (e) {
+			return 'Something went wrong';
+		}
+	}
 </script>
 
-<svelte:boundary>
-	{@render children()}
+<svelte:boundary {onerror}>{@render children?.()}</svelte:boundary>
 
-	{#snippet failed(error, reset)}
-		<button onclick={reset}>oops! try again</button>
-	{/snippet}
-</svelte:boundary>
+{#if error}
+	<ExperimentsSideBar {experiments} />
+	<ErrorAnimation message={tryGetErrorMessage()} />
+{/if}

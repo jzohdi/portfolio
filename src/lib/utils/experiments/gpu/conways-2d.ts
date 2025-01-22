@@ -267,40 +267,7 @@ export const main: MainFunction = async (
 		device.queue.submit([commandEncoder.finish()]);
 		animationFrameId = requestAnimationFrame(render);
 	}
-	// let animationFrameId: number;
-	// let lastUpdateTime = 0; // Track the last time the grid was updated
-	// const FRAME_DELAY = 50; // Delay in milliseconds between updates (e.g., 200ms)
-	// function render(currentTime: number) {
-	//   const elapsedTime = currentTime - lastUpdateTime;
 
-	//   if (elapsedTime >= FRAME_DELAY) {
-	//     updateGrid(); // Update the grid only if enough time has passed
-	//     lastUpdateTime = currentTime;
-	//   }
-
-	//   const commandEncoder = device.createCommandEncoder();
-	//   const renderPassDescriptor: GPURenderPassDescriptor = {
-	//     colorAttachments: [
-	//       {
-	//         view: context.getCurrentTexture().createView(),
-	//         loadOp: 'clear',
-	//         storeOp: 'store',
-	//         clearValue: { r: 0.9, g: 0.9, b: 0.9, a: 1.0 },
-	//       },
-	//     ],
-	//   };
-
-	//   const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-	//   passEncoder.setPipeline(pipeline);
-	//   passEncoder.setVertexBuffer(0, vertexBuffer);
-	//   passEncoder.setVertexBuffer(1, positionScaleBuffer);
-	//   passEncoder.setVertexBuffer(2, colorBuffer);
-	//   passEncoder.draw(6, instanceCount, 0, 0);
-	//   passEncoder.end();
-
-	//   device.queue.submit([commandEncoder.finish()]);
-	//   animationFrameId = requestAnimationFrame(render);
-	// }
 	render(new Date().getMilliseconds());
 
 	return () => cancelAnimationFrame(animationFrameId);
