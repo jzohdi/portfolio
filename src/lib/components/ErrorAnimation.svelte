@@ -75,7 +75,7 @@
 		// https://github.com/mrdoob/three.js/blob/master/examples/fonts/helvetiker_regular.typeface.json
 		loader.load('/fonts/helvetiker_regular.typeface.json', (loadedFont) => {
 			font = loadedFont;
-			create3DText(message, 0.5, 0.2);
+			create3DText(message, 0.5, 0.1);
 		});
 
 		// Handle window resize
@@ -93,8 +93,8 @@
 			animationId = requestAnimationFrame(animate);
 
 			// Rotate the camera for a dynamic effect
-			camera.position.x = Math.sin(Date.now() * 0.001) * 5;
-			camera.position.z = Math.cos(Date.now() * 0.001) * 5;
+			camera.position.x = Math.sin(Date.now() * 0.001) * 6;
+			camera.position.z = Math.cos(Date.now() * 0.001) * 6;
 			camera.lookAt(scene.position);
 
 			// Update particles (optional: add more dynamic behavior)

@@ -15,14 +15,8 @@
 	}
 
 	function tryGetErrorMessage() {
-		if (!error) {
-			return 'Something went wrong';
-		}
-		try {
-			return error?.message?.split('\n')?.[0];
-		} catch (e) {
-			return 'Something went wrong';
-		}
+		console.error(error?.message?.split('\n')?.[0]);
+		return 'Error';
 	}
 </script>
 
