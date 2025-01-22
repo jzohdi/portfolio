@@ -57,7 +57,7 @@
 				>
 				<a
 					href={link}
-					target="_blank"
+					target={action == 'open' ? '_blank' : '_self'}
 					class="flex w-fit items-center rounded-sm bg-secondary px-4 py-2 text-white"
 				>
 					{action === 'open' ? 'Open' : 'Go'}

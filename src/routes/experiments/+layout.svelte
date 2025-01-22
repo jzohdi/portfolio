@@ -15,17 +15,23 @@
 	}
 
 	function tryGetErrorMessage() {
+		if (!error) {
+			return 'Something went wrong';
+		}
 		try {
-			return error?.message.split('\n')[0];
+			return error?.message?.split('\n')?.[0];
 		} catch (e) {
 			return 'Something went wrong';
 		}
 	}
 </script>
 
+<ExperimentsSideBar {experiments} />
+<ErrorAnimation message={tryGetErrorMessage()} />
 <svelte:boundary {onerror}>{@render children?.()}</svelte:boundary>
 
 {#if error}
 	<ExperimentsSideBar {experiments} />
-	<ErrorAnimation message={tryGetErrorMessage()} />
+
+	<div class=" content-center justify-items-center text-white">{tryGetErrorMessage()}</div>
 {/if}

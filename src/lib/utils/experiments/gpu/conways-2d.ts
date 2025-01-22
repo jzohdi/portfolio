@@ -241,7 +241,6 @@ export const main: MainFunction = async (
 		const elapsedTime = currentTime - lastUpdateTime;
 
 		if (elapsedTime >= FRAME_DELAY) {
-			throw new Error('got here');
 			updateGrid(); // Update the grid only if enough time has passed
 			lastUpdateTime = currentTime;
 		}
@@ -269,7 +268,7 @@ export const main: MainFunction = async (
 		animationFrameId = requestAnimationFrame(render);
 	}
 
-	render(Date.now());
+	render(new Date().getMilliseconds());
 
 	return () => cancelAnimationFrame(animationFrameId);
 };

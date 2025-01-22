@@ -20,9 +20,6 @@
 	let device: GPUDevice, context: GPUCanvasContext, format: GPUTextureFormat;
 
 	function getScreenDimensions() {
-		if (window.screen?.width > 0) {
-			return { width: window.screen.width, height: window.screen.height };
-		}
 		return {
 			width: window.innerWidth,
 			height: window.innerHeight
@@ -84,6 +81,6 @@
 <canvas
 	width={canvasDimensions.width}
 	height={canvasDimensions.height}
-	class="fixed left-[20px] top-[60px] w-[100vw] bg-black sm:top-[72px]"
+	class="w-[100vw fixed left-[20px] top-[60px] lg:top-[72px]"
 	bind:this={canvas}
 ></canvas>

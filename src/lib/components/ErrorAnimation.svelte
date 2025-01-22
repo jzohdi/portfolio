@@ -143,7 +143,7 @@
 	}
 </script>
 
-<div bind:this={container} class="animation-container"></div>
+<div bind:this={container} class="animation-container md:!top-[72px]"></div>
 
 <style>
 	.animation-container {
