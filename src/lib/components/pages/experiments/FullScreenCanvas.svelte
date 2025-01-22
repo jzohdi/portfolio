@@ -84,6 +84,6 @@
 <canvas
 	width={canvasDimensions.width}
 	height={canvasDimensions.height}
-	class="fixed left-[20px] top-[60px] w-[100vw] sm:top-[72px]"
+	class="fixed left-[20px] top-[60px] w-[100vw] bg-black sm:top-[72px]"
 	bind:this={canvas}
 ></canvas>
