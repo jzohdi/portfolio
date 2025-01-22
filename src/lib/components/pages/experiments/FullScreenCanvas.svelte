@@ -38,7 +38,7 @@
 	}
 	function resizeCanvasAndConfigure() {
 		if (!canvas) {
-			return;
+			throw new Error('no canvas during resize and configure');
 		}
 		resizeCanvas(canvas);
 		context.configure({
@@ -51,7 +51,7 @@
 
 	onMount(async () => {
 		if (!canvas) {
-			return;
+			throw new Error('no canvas');
 		}
 		resizeCanvas(canvas);
 		const init = await initWebGPU(canvas);
