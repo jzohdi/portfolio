@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	type Element = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'ul' | 'li';
+	type Element = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'ul' | 'li' | 'code';
 	interface TextSpecificProps {
 		element: Element;
 		// class?: string;
@@ -17,7 +17,8 @@
 		h4: 'scroll-m-20 text-xl font-semibold tracking-tight',
 		p: 'leading-7 [&:not(:first-child)]:mt-6',
 		ul: 'my-6 ml-1 list-disc [&>li]:mt-2',
-		li: '[&:not(:first-child)]:mt-4'
+		li: '[&:not(:first-child)]:mt-4',
+		code: 'bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'
 	} as const;
 
 	let { element, children, class: classNames }: TextProps = $props();
@@ -49,6 +50,10 @@
 	<li class={clsx}>
 		{@render children?.()}
 	</li>
+{:else if element === 'code'}
+	<code class={clsx}>
+		{@render children?.()}
+	</code>
 {:else}
 	<p class={clsx}>
 		{@render children?.()}

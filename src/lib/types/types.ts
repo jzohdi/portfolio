@@ -1,3 +1,4 @@
+import type { RichText, RichTextText } from './blocks';
 import type { Experiment } from './experiments';
 import type { Project } from './projects';
 
@@ -70,7 +71,7 @@ export interface CommonName {
 
 export interface Title {
 	type: string;
-	text: Text2;
+	text: RichTextText;
 	annotations: Annotations2;
 	plain_text: string;
 	href: string | null;
@@ -122,17 +123,6 @@ export interface Text {
 	rich_text: RichText[];
 }
 
-export interface RichText {
-	type: string;
-	text: Text2;
-	annotations: Annotations;
-	plain_text: string;
-}
-
-export interface Text2 {
-	content: string;
-}
-
 export interface Annotations {
 	bold: boolean;
 	italic: boolean;
@@ -150,7 +140,7 @@ export interface Name {
 
 export interface Title {
 	type: string;
-	text: Text3;
+	text: RichTextText;
 	annotations: Annotations2;
 	plain_text: string;
 }

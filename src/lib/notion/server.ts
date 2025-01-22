@@ -1,8 +1,7 @@
 import { Client } from '@notionhq/client';
 import { NOTION_API_KEY, NOTION_DATABASE_ID } from '$env/static/private';
 import type { PostsQuery } from '$lib/types/posts';
-import type { PostBlock } from '$lib/types/blocks';
-import type { RichText } from '$lib/types/types';
+import type { PostBlock, RichText } from '$lib/types/blocks';
 import {
 	listAllExperiments,
 	listAllPostBlocks,
@@ -128,6 +127,7 @@ export type ParsedP = ReturnType<typeof parseParagraphBlock>;
 export type ParsedNLI = ReturnType<typeof parseNumberedListItem>;
 export type ParsedCode = ReturnType<typeof parseCodeBlock>;
 export type ParsedImage = ReturnType<typeof parseImageBlock>;
+export type ParsedRichText = ReturnType<typeof parseRichText>;
 
 function parseHeading2(block: PostBlock) {
 	const content = parseRichText(block.heading_2?.rich_text);
@@ -139,13 +139,12 @@ function parseHeading2(block: PostBlock) {
 
 function parseRichText(richText?: RichText[]) {
 	if (!richText) {
-		return '';
+		return [];
 	}
-	return richText
-		.map((text) => {
-			return text.plain_text;
-		})
-		.join(' ');
+	return richText.map((text) => {
+		// console.log(JSON.stringify(text, null, 4));
+		return { ...text.text, code: text.annotations.code };
+	});
 }
 
 function parseHeading3(block: PostBlock) {
@@ -171,6 +170,7 @@ function parseNumberedListItem(block: PostBlock) {
 }
 
 function parseParagraphBlock(block: PostBlock) {
+	// console.log(JSON.stringify(block, null, 4));
 	return {
 		type: 'paragraph',
 		content: parseRichText(block.paragraph?.rich_text)
@@ -180,7 +180,7 @@ function parseParagraphBlock(block: PostBlock) {
 function parseCodeBlock(block: PostBlock) {
 	return {
 		type: 'code',
-		code: parseRichText(block.code?.rich_text),
+		code: block.code?.rich_text[0].plain_text,
 		language: block.code?.language as string
 	} as const;
 }

@@ -1,34 +1,58 @@
 <script lang="ts">
 	import Text from '$lib/components/Text.svelte';
-	import type { ParsedElement } from '$lib/notion/server';
+	import type { ParsedElement, ParsedRichText } from '$lib/notion/server';
 	import 'highlight.js/styles/github-dark.min.css';
 	import { CodeBlock } from 'svhighlight';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { isValidUrl } from '$lib/utils/vite-helper';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
 	import ATag from '$lib/components/ATag.svelte';
+	import type { RichTextText } from '$lib/types/blocks';
 
 	const { block } = $props();
 	const data = block as ParsedElement;
+	function isTextLink(content: ParsedRichText[0]) {
+		return !!content?.link?.url;
+	}
+	if (data.type === 'paragraph') {
+		const content = data.content;
+	}
+
+	function parseStringContent(content: RichTextText[]) {
+		return content.map((c) => c.content).join(' ');
+	}
 </script>
 
+{#snippet renderText(content: ParsedRichText)}
+	{#each content as paragraphBlock}
+		{#if isTextLink(paragraphBlock)}
+			<ATag class="" href={paragraphBlock?.link?.url}>{paragraphBlock.content}</ATag>
+		{:else if paragraphBlock.code === true}
+			<Text element="code">{paragraphBlock.content}</Text>
+		{:else}
+			{paragraphBlock.content}
+		{/if}
+	{/each}
+{/snippet}
+
 {#if data.type === 'paragraph'}
-	{#if isValidUrl(data.content)}
-		<div>
-			<ATag class="!break-all" href={data.content}>{data.content}</ATag>
-		</div>
-	{:else}
-		<Text element="p" class="break-words">{@html data.content}</Text>
-	{/if}
+	<Text element="p" class="break-words">
+		{@render renderText(data.content)}
+	</Text>
 {:else if data.type === 'h2'}
-	<Text element="h2">{data.content}</Text>
+	<Text element="h2">
+		{@render renderText(data.content)}
+	</Text>
 {:else if data.type === 'h3'}
-	<Text element="h3" class="pt-4">{data.content}</Text>
+	<Text element="h3" class="pt-4">
+		{@render renderText(data.content)}
+	</Text>
 {:else if data.type === 'numbered_list'}
 	<ol class="list-decimal py-5">
 		{#each data.group as listItem}
-			<Text element="li" class="ml-10">{listItem.content}</Text>
+			<Text element="li" class="ml-10">
+				{@render renderText(listItem.content)}
+			</Text>
 		{/each}
 	</ol>
 {:else if data.type === 'code'}
