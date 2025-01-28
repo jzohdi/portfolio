@@ -3,6 +3,7 @@ import type { ExperimentsQuery } from '$lib/types/experiments';
 import type { PostsQuery } from '$lib/types/posts';
 import type { ProjectsQuery } from '$lib/types/projects';
 import { Client } from '@notionhq/client';
+import { EXPERIMENTS_DATABASE } from './constants';
 
 const POSTS_DATABASE_ID = '16b216c9-d0ab-801d-9d5c-f899728f5d75';
 
@@ -84,8 +85,6 @@ export async function listPublishedProjects(notion: Client) {
 
 	return response.results.filter((result) => result.properties.published.checkbox === true);
 }
-
-const EXPERIMENTS_DATABASE = '17f216c9-d0ab-80bc-80c1-fa31426d799a';
 
 export async function listAllExperiments(notion: Client) {
 	const response = (await notion.databases.query({

@@ -23,33 +23,34 @@ export function makeDirectories(experiments: Experiment[]) {
 	for (const path of allPaths) {
 		const newFile = breakUpPath(path);
 		const parentForFile = addDirsToRoot(root, newFile.dirs);
-		addFileTo(parentForFile, newFile.file);
+		parentForFile.subs.push(newFile.file);
 	}
-	sortSubs(root);
+	// sortSubs(root);
+	// console.log(root);
 	return root;
 }
 
-function sortSubs(dir: Directory) {
-	if (dir.subs.length === 0) {
-		return;
-	}
-	const file = dir.subs.find((ele) => ele.type === 'file');
-	const sortedDirs: Directory[] = [];
-	for (const sub of dir.subs) {
-		if (sub.type === 'dir') {
-			sortedDirs.push(sub);
-		}
-	}
-	sortedDirs.sort((a, b) => a.name.localeCompare(b.name));
-	for (const dir of sortedDirs) {
-		sortSubs(dir);
-	}
-	if (!file) {
-		dir.subs = sortedDirs;
-		return;
-	}
-	dir.subs = [file, ...sortedDirs];
-}
+// function sortSubs(dir: Directory) {
+// 	if (dir.subs.length === 0) {
+// 		return;
+// 	}
+// 	const file = dir.subs.find((ele) => ele.type === 'file');
+// 	const sortedDirs: Directory[] = [];
+// 	for (const sub of dir.subs) {
+// 		if (sub.type === 'dir') {
+// 			sortedDirs.push(sub);
+// 		}
+// 	}
+// 	sortedDirs.sort((a, b) => a.name.localeCompare(b.name));
+// 	for (const dir of sortedDirs) {
+// 		sortSubs(dir);
+// 	}
+// 	if (!file) {
+// 		dir.subs = sortedDirs;
+// 		return;
+// 	}
+// 	dir.subs = [file, ...sortedDirs];
+// }
 
 function breakUpPath(path: string): { dirs: Directory[]; file: File } {
 	const paths = path.split('-');
@@ -86,14 +87,14 @@ function addDirsToRoot(root: Directory, newDirs: Directory[]) {
 	return parentForFile;
 }
 
-function addFileTo(dest: Directory, file: File) {
-	for (const sub of dest.subs) {
-		if (sub.type === 'file') {
-			return new Error('bad path');
-		}
-	}
-	dest.subs.push(file);
-}
+// function addFileTo(dest: Directory, file: File) {
+// 	for (const sub of dest.subs) {
+// 		if (sub.type === 'file') {
+// 			return new Error('bad path');
+// 		}
+// 	}
+// 	dest.subs.push(file);
+// }
 
 function returnDirFrom(src: Directory, targetName: string) {
 	for (const sub of src.subs) {

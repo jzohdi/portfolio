@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.conways-game-row {
+	display: flex;
+}
+.conways-game-row > div {
+	transition: background-color 50ms linear;
+}
+
 @layer base {
 	@font-face {
 		font-family: 'Inter';

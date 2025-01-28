@@ -9,8 +9,9 @@ import {
 	listPublishedPosts,
 	listPublishedProjects
 } from './vite-build';
-import type { Experiment, ExperimentsResult } from '$lib/types/experiments';
+import type { Experiment, ExperimentsQuery, ExperimentsResult } from '$lib/types/experiments';
 import { extractFileUrl, extractRichText, extractTitle } from './helper';
+import { EXPERIMENTS_DATABASE } from './constants';
 
 /**
  * For use in svelte server. I need to separate the vite build functions
@@ -31,6 +32,23 @@ export async function getPublishedProjects() {
 
 export async function getAllExperiments() {
 	return listAllExperiments(notion);
+}
+
+export async function getExperimentByRoute(route: string) {
+	const response = await notion.databases.query({
+		database_id: EXPERIMENTS_DATABASE,
+		filter: {
+			property: 'route',
+			rich_text: {
+				equals: route
+			}
+		}
+	});
+	const queryResults = (response as ExperimentsQuery).results;
+	if (queryResults.length !== 1) {
+		throw new Error('query result returned incorrect number of results: ' + queryResults.length);
+	}
+	return queryResults[0];
 }
 
 export async function getPublishedPostBySlug(slug: string) {

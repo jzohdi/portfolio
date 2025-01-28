@@ -31,7 +31,7 @@
 		const { width, height } = getScreenDimensions();
 		canvasDimensions = {
 			width: Math.floor(width * devicePixelRatio),
-			height: Math.floor((height - 60) * devicePixelRatio)
+			height: Math.floor(height * devicePixelRatio)
 		};
 	}
 
@@ -81,6 +81,6 @@
 <canvas
 	width={canvasDimensions.width}
 	height={canvasDimensions.height}
-	class="w-[100vw fixed left-[20px] top-[60px] lg:top-[72px]"
+	class="h-full w-full"
 	bind:this={canvas}
 ></canvas>

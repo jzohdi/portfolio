@@ -15,7 +15,7 @@
 </script>
 
 <div
-	class={`${isSidebarOpen ? 'left-0' : '-left-36'} fixed top-12 z-10 grid h-screen grid-cols-6 overflow-hidden bg-white transition-all dark:bg-slate-950`}
+	class={`${isSidebarOpen ? 'left-0' : 'right-[calc(100vw-30px)'} fixed top-12 z-10 grid h-screen grid-cols-6 overflow-hidden bg-white transition-all dark:bg-slate-950`}
 >
 	<div class="col-span-5 flex h-full px-3 pt-2">
 		<div class="flex justify-center">

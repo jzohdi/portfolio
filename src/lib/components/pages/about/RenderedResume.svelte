@@ -89,7 +89,6 @@
 		if (!isMobileDevice()) {
 			event.preventDefault();
 		}
-		console.log(event.deltaY);
 		if (renderer && referrenceCanvas) {
 			renderer.handleZoom(event);
 			renderer.clear();
