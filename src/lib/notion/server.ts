@@ -99,20 +99,11 @@ export async function getPageBlocks(pageId: string): Promise<ParsedElements> {
 	const blocks = await listAllPostBlocks(notion, pageId);
 
 	const groupLists: ParsedElements = [];
-	// let currentGroup = [];
 	const parsed = blocks.map(parseBlock);
+	// handle numbered and bullet lists (need to be grouped together)
 	for (let i = 0; i < parsed.length; i++) {
 		const curr = parsed[i];
 		appendItemToGripLists(groupLists, curr);
-		// if (curr.type === 'numbered_list_item') {
-		// 	currentGroup.push(curr);
-		// } else {
-		// 	if (currentGroup.length > 0) {
-		// 		groupLists.push({ type: 'numbered_list', group: currentGroup } as const);
-		// 		currentGroup = [];
-		// 	}
-		// 	groupLists.push(curr);
-		// }
 	}
 
 	return groupLists;

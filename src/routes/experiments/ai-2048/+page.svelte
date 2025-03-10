@@ -32,7 +32,27 @@
 	let gameManager: GameManager;
 	let gameAI: AlphaBetaAI;
 	let aiAnimationFrameId: number | undefined;
+
 	let heuristics = $state([gradientSmoothness]);
+
+	// Define an action that attaches an event listener with { passive: false }
+	export function nonPassiveEvent(
+		node: HTMLElement,
+		params: { event: string; handler: (e: Event) => void }
+	) {
+		const { event, handler } = params;
+		node.addEventListener(event, handler, { passive: false });
+
+		return {
+			destroy() {
+				node.removeEventListener(event, handler);
+			}
+		};
+	}
+
+	function handleRestart(event: Event) {
+		inputManager.restart(event);
+	}
 
 	onMount(() => {
 		inputManager = new KeyboardInputManager(
@@ -97,20 +117,47 @@
 
 	<div class="above-game">
 		<p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-		<button bind:this={restartButtonEle} class="restart-button">New Game</button>
+		<button onclick={handleRestart} bind:this={restartButtonEle} class="restart-button"
+			>New Game</button
+		>
 	</div>
 
 	<div
-		ontouchstart={(event) => {
-			const result = handleTouchStart(event);
-			if (result) {
-				touchStartClientX = result.touchStartClientX;
-				touchStartClientY = result.touchStartClientY;
+		use:nonPassiveEvent={{
+			event: 'touchmove',
+			handler: (e) => {
+				if (gameManager.isGameTerminated()) {
+					return;
+				}
+				e.preventDefault();
 			}
 		}}
-		ontouchmove={(event) => handleTouchMove(event)}
-		ontouchend={(event) =>
-			handleTouchEnd(event, { touchStartClientX, touchStartClientY }, inputManager)}
+		use:nonPassiveEvent={{
+			event: 'touchstart',
+			handler: (e) => {
+				if (gameManager.isGameTerminated()) {
+					return;
+				}
+				if (e instanceof TouchEvent) {
+					const result = handleTouchStart(e);
+					if (result) {
+						touchStartClientX = result.touchStartClientX;
+						touchStartClientY = result.touchStartClientY;
+					}
+				}
+			}
+		}}
+		use:nonPassiveEvent={{
+			event: 'touchend',
+			handler: (e) => {
+				if (gameManager.isGameTerminated()) {
+					return;
+				}
+				if (e instanceof TouchEvent) {
+					handleTouchEnd(e, { touchStartClientX, touchStartClientY }, inputManager);
+				}
+			}
+		}}
 		bind:this={gameContainerEle}
 		class="game-container"
 	>
@@ -118,7 +165,9 @@
 			<p></p>
 			<div class="lower">
 				<button bind:this={keepPlayingButtonEle} class="keep-playing-button">Keep going</button>
-				<button bind:this={retryButtonEle} class="retry-button">Try again</button>
+				<button onclick={handleRestart} bind:this={retryButtonEle} class="retry-button"
+					>Try again</button
+				>
 			</div>
 		</div>
 
