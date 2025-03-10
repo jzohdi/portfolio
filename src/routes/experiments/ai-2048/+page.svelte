@@ -1,15 +1,7 @@
 <script lang="ts">
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { onMount } from 'svelte';
-	import type {
-		MoveDirection,
-		PositionXY,
-		SerializedGameManager,
-		SerializedTile
-	} from '$lib/utils/experiments/2048ai/types';
-	import Tile from '$lib/utils/experiments/2048ai/tile';
+	import { onDestroy, onMount } from 'svelte';
 	import LocalStorageManager from '$lib/utils/experiments/2048ai/storage';
-	import Grid from '$lib/utils/experiments/2048ai/grid';
 	import HTMLActuator from '$lib/utils/experiments/2048ai/actuator';
 	import {
 		KeyboardInputManager,
@@ -19,6 +11,9 @@
 		handleTouchStart
 	} from '$lib/utils/experiments/2048ai/inputManager';
 	import GameManager from '$lib/utils/experiments/2048ai/game';
+	import Switch from '$lib/components/ui/switch/switch.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { AlphaBetaAI, gradientSmoothness } from '$lib/utils/experiments/2048ai/ai';
 
 	let tileContainerDiv: HTMLDivElement;
 	let scoreContainerDiv: HTMLDivElement;
@@ -33,6 +28,11 @@
 	let touchStartClientX: number;
 	let touchStartClientY: number;
 	let inputManager: KeyboardInputManager;
+	let isRunningAi: boolean = $state(false);
+	let gameManager: GameManager;
+	let gameAI: AlphaBetaAI;
+	let aiAnimationFrameId: number | undefined;
+	let heuristics = $state([gradientSmoothness]);
 
 	onMount(() => {
 		inputManager = new KeyboardInputManager(
@@ -41,15 +41,42 @@
 			keepPlayingButtonEle,
 			gameContainerEle
 		);
-		// Wait till the browser is ready to render the game (avoids glitches)
-		requestAnimationFrame(() => {
-			new GameManager(
-				4,
-				inputManager,
-				new HTMLActuator(tileContainerDiv, scoreContainerDiv, bestContainerDiv, gameMessageDiv),
-				new LocalStorageManager()
-			);
-		});
+		gameManager = new GameManager(
+			4,
+			inputManager,
+			new HTMLActuator(tileContainerDiv, scoreContainerDiv, bestContainerDiv, gameMessageDiv),
+			new LocalStorageManager()
+		);
+		gameAI = new AlphaBetaAI(gameManager, heuristics);
+	});
+
+	function handleToggleRunAi(runAiCheckedState: boolean) {
+		isRunningAi = runAiCheckedState;
+		animateAI();
+	}
+
+	function animateAI() {
+		if (isRunningAi) {
+			if (!gameManager.isGameTerminated()) {
+				const bestMove = gameAI.calculateBestMove();
+				gameManager.move(bestMove);
+			}
+			aiAnimationFrameId = requestAnimationFrame(animateAI);
+		} else if (aiAnimationFrameId !== undefined) {
+			cancelAI();
+		}
+	}
+
+	function cancelAI() {
+		if (aiAnimationFrameId !== undefined) {
+			cancelAnimationFrame(aiAnimationFrameId);
+			aiAnimationFrameId = undefined;
+		}
+		isRunningAi = false;
+	}
+
+	onDestroy(() => {
+		cancelAI();
 	});
 </script>
 
@@ -57,7 +84,7 @@
 	<link href="/2048/main.css" rel="stylesheet" type="text/css" />
 </svelte:head>
 
-<svelte:document on:keydown={(event) => handleKeyDown(event, inputManager)} />
+<svelte:document onkeydown={(event) => handleKeyDown(event, inputManager)} />
 
 <div class="container-2048">
 	<div class="heading">
@@ -74,15 +101,15 @@
 	</div>
 
 	<div
-		on:touchstart={(event) => {
+		ontouchstart={(event) => {
 			const result = handleTouchStart(event);
 			if (result) {
 				touchStartClientX = result.touchStartClientX;
 				touchStartClientY = result.touchStartClientY;
 			}
 		}}
-		on:touchmove={(event) => handleTouchMove(event)}
-		on:touchend={(event) =>
+		ontouchmove={(event) => handleTouchMove(event)}
+		ontouchend={(event) =>
 			handleTouchEnd(event, { touchStartClientX, touchStartClientY }, inputManager)}
 		bind:this={gameContainerEle}
 		class="game-container"
@@ -124,13 +151,22 @@
 
 		<div bind:this={tileContainerDiv} class="tile-container text-white"></div>
 	</div>
-
-	<p class="game-explanation">
+	<Spacer height="50px"></Spacer>
+	<div></div>
+	<div class="flex items-center space-x-2">
+		<Switch
+			bind:checked={() => isRunningAi, handleToggleRunAi}
+			id="airplane-mode"
+			class="data-[state=checked]:bg-secondary"
+		/>
+		<Label for="airplane-mode">Run AI</Label>
+	</div>
+	<p class="game-explanation py-4">
 		<strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the
 		tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
 	</p>
 	<hr />
-	<p>
+	<p class="py-4">
 		Based on <a target="_blank" href="https://play2048.co/">2048</a> by
 		<a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
 		Based on
@@ -142,3 +178,25 @@
 	</p>
 	<Spacer height="100px"></Spacer>
 </div>
+
+<style>
+	/* .keep-playing-button,
+	.retry-button {
+		color: #776e65;
+		font-weight: bold;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	.game-container .game-message button {
+		display: inline-block;
+		background: #8f7a66;
+		border-radius: 3px;
+		padding: 0 20px;
+		text-decoration: none;
+		color: #f9f6f2;
+		height: 40px;
+		line-height: 42px;
+		margin-left: 9px;
+	} */
+</style>

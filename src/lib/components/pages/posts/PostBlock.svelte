@@ -30,17 +30,17 @@
 		{:else if paragraphBlock.code === true}
 			<Text element="code">{paragraphBlock.content}</Text>
 		{:else}
-			{paragraphBlock.content}
+			<span class={`${paragraphBlock.bold ? 'font-bold' : ''}`}>{paragraphBlock.content}</span>
 		{/if}
 	{/each}
 {/snippet}
 
 {#if data.type === 'paragraph'}
-	<Text element="p" class="break-words">
+	<Text element="p" class="break-words pb-3">
 		{@render renderText(data.content)}
 	</Text>
 {:else if data.type === 'h2'}
-	<Text element="h2">
+	<Text element="h2" class="pt-4">
 		{@render renderText(data.content)}
 	</Text>
 {:else if data.type === 'h3'}
@@ -55,6 +55,14 @@
 			</Text>
 		{/each}
 	</ol>
+{:else if data.type === 'bulleted_list'}
+	<ul class=" list-disc py-5">
+		{#each data.group as listItem}
+			<Text element="li" class="ml-10">
+				{@render renderText(listItem.content)}
+			</Text>
+		{/each}
+	</ul>
 {:else if data.type === 'code'}
 	<Spacer height="10px"></Spacer>
 	<!-- <div class="bg-slate-900 p-4 text-white"> -->

@@ -1,5 +1,5 @@
 import type HTMLActuator from './actuator';
-import Grid from './grid';
+import Grid, { type GridCells } from './grid';
 import type { KeyboardInputManager } from './inputManager';
 import type LocalStorageManager from './storage';
 import Tile from './tile';
@@ -12,7 +12,9 @@ const VECTOR_MAP = {
 	2: { x: 0, y: 1 }, // Down
 	3: { x: -1, y: 0 } // Left
 } as const;
+
 type Vector = (typeof VECTOR_MAP)[keyof typeof VECTOR_MAP];
+
 type Traversals = {
 	x: number[];
 	y: number[];
@@ -51,7 +53,11 @@ export default class GameManager {
 		this.inputManager.on('restart', this.restart.bind(this));
 		this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
 
-		this.setup(this.storageManager.getGameState());
+		const previousState = this.storageManager.getGameState();
+		// Reload the game from a previous game if present
+		if (previousState) {
+			this.loadPeviousState(previousState);
+		}
 	}
 	restart() {
 		this.storageManager.clearGameState();
@@ -74,20 +80,31 @@ export default class GameManager {
 	setup(previousState: SerializedGameManager | null) {
 		// Reload the game from a previous game if present
 		if (previousState) {
-			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
-			this.score = previousState.score;
-			this.isGameOver = previousState.over;
-			this.didWinGame = previousState.won;
-			this.shouldKeepPlaying = previousState.keepPlaying;
+			this.loadPeviousState(previousState);
 		} else {
-			this.grid = new Grid(this.size);
-			this.score = 0;
-			this.isGameOver = false;
-			this.didWinGame = false;
-			this.shouldKeepPlaying = false;
-			// Add the initial tiles
-			this.addStartTiles();
+			this.initNewGame();
 		}
+	}
+
+	loadPeviousState(previousState: SerializedGameManager) {
+		this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
+		this.score = previousState.score;
+		this.isGameOver = previousState.over;
+		this.didWinGame = previousState.won;
+		this.shouldKeepPlaying = previousState.keepPlaying;
+
+		// Update the actuator
+		this.actuate();
+	}
+
+	initNewGame() {
+		this.grid = new Grid(this.size);
+		this.score = 0;
+		this.isGameOver = false;
+		this.didWinGame = false;
+		this.shouldKeepPlaying = false;
+		// Add the initial tiles
+		this.addStartTiles();
 
 		// Update the actuator
 		this.actuate();
@@ -150,11 +167,52 @@ export default class GameManager {
 			}
 		});
 	}
+
 	moveTile(tile: Tile, cell: PositionXY) {
+		GameManager.moveTile(tile, cell, this.grid.getCells());
+	}
+
+	static moveTile(tile: Tile, cell: PositionXY, gridCells: GridCells) {
 		const { x, y } = tile.getPosition();
-		this.grid.getCells()[x][y] = null;
-		this.grid.getCells()[cell.x][cell.y] = tile;
+		gridCells[x][y] = null;
+		gridCells[cell.x][cell.y] = tile;
 		tile.updatePosition(cell);
+	}
+
+	moveGridCells(gridCells: GridCells, direction: MoveDirection) {
+		const size = gridCells.length;
+		const vector = GameManager.getVector(direction);
+		const traversals = GameManager.buildTraversals(vector, size);
+
+		// Traverse the grid in the right direction and move tiles
+		traversals.x.forEach((x) => {
+			traversals.y.forEach((y) => {
+				const cell = { x: x, y: y };
+				const tile = Grid.cellContent(cell, gridCells);
+
+				if (tile) {
+					const positions = GameManager.findFarthestPosition(cell, vector, gridCells);
+					const next = Grid.cellContent(positions.next, gridCells);
+
+					// Only one merger per row traversal?
+					if (next && next.getValue() === tile.getValue() && !next.mergedFrom) {
+						const merged = new Tile(positions.next, tile.getValue() * 2);
+						merged.mergedFrom = [tile, next];
+
+						Grid.insertTile(merged, gridCells);
+						Grid.removeTile(tile, gridCells);
+
+						// Converge the two tiles' positions
+						tile.updatePosition(positions.next);
+
+						// The mighty 2048 tile
+						if (merged.getValue() === 2048) this.didWinGame = true;
+					} else {
+						GameManager.moveTile(tile, positions.farthest, gridCells);
+					}
+				}
+			});
+		});
 	}
 
 	move(direction?: MoveDirection) {
@@ -162,7 +220,7 @@ export default class GameManager {
 		// 0: up, 1: right, 2: down, 3: left
 		if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
-		const vector = this.getVector(direction);
+		const vector = GameManager.getVector(direction);
 		const traversals = this.buildTraversals(vector);
 		let didMove = false;
 
@@ -217,14 +275,18 @@ export default class GameManager {
 		}
 	}
 
-	getVector(direction: MoveDirection): Vector {
+	static getVector(direction: MoveDirection): Vector {
 		return VECTOR_MAP[direction];
 	}
 
 	buildTraversals(vector: Vector): Traversals {
+		return GameManager.buildTraversals(vector, this.size);
+	}
+
+	static buildTraversals(vector: Vector, size: number): Traversals {
 		const traversals: Traversals = { x: [], y: [] };
 
-		for (let pos = 0; pos < this.size; pos++) {
+		for (let pos = 0; pos < size; pos++) {
 			traversals.x.push(pos);
 			traversals.y.push(pos);
 		}
@@ -237,13 +299,17 @@ export default class GameManager {
 	}
 
 	findFarthestPosition(cell: PositionXY, vector: Vector) {
+		return GameManager.findFarthestPosition(cell, vector, this.grid.getCells());
+	}
+
+	static findFarthestPosition(cell: PositionXY, vector: Vector, gridCells: GridCells) {
 		let previous;
 
 		// Progress towards the vector direction until an obstacle is found
 		do {
 			previous = cell;
 			cell = { x: previous.x + vector.x, y: previous.y + vector.y };
-		} while (this.grid.withinBounds(cell) && this.grid.cellAvailable(cell));
+		} while (Grid.withinBounds(cell, gridCells.length) && Grid.cellAvailable(cell, gridCells));
 
 		return {
 			farthest: previous,
@@ -263,7 +329,7 @@ export default class GameManager {
 				if (!tile) continue;
 
 				for (let direction = 0; direction < 4; direction++) {
-					const vector = this.getVector(direction as MoveDirection);
+					const vector = GameManager.getVector(direction as MoveDirection);
 					const cell = { x: x + vector.x, y: y + vector.y };
 
 					const other = this.grid.cellContent(cell);
@@ -281,5 +347,19 @@ export default class GameManager {
 	positionsEqual(first: PositionXY, tile: Tile) {
 		const second = tile.getPosition();
 		return first.x === second.x && first.y === second.y;
+	}
+
+	/*
+	 * =======================================================
+	 *             START OF FUNCTIONS FOR USE BY AI
+	 * =======================================================
+	 */
+
+	getCurrentGridCopy(): GridCells {
+		return this.grid
+			.getCells()
+			.map((row) =>
+				row.map((cell) => (cell ? new Tile(cell.getPosition(), cell.getValue()) : null))
+			);
 	}
 }

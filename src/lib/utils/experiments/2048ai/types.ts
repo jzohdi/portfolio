@@ -1,5 +1,7 @@
 export type PositionXY = { x: number; y: number };
+
 export type MoveDirection = 0 | 1 | 2 | 3;
+// 0: up, 1: right, 2: down, 3: left
 
 export type SerializedTile = {
 	position: PositionXY;

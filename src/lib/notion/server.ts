@@ -89,30 +89,63 @@ export async function getTextDatabase() {
 		database_id: NOTION_DATABASE_ID
 	});
 }
-export type ParsedElement = { type: 'numbered_list'; group: ParsedNLI[] } | ParsedEle;
+export type GroupedNumberedList = { type: 'numbered_list'; group: ParsedNLI[] };
+export type GroupedBulletedList = { type: 'bulleted_list'; group: ParsedBulletList[] };
+export type ParsedElement = GroupedNumberedList | GroupedBulletedList | ParsedEle;
 
-export type ParsedElements = ({ type: 'numbered_list'; group: ParsedNLI[] } | ParsedEle)[];
+export type ParsedElements = ParsedElement[];
 
 export async function getPageBlocks(pageId: string): Promise<ParsedElements> {
 	const blocks = await listAllPostBlocks(notion, pageId);
 
-	const groupLists = [];
-	let currentGroup = [];
+	const groupLists: ParsedElements = [];
+	// let currentGroup = [];
 	const parsed = blocks.map(parseBlock);
 	for (let i = 0; i < parsed.length; i++) {
 		const curr = parsed[i];
-		if (curr.type === 'numbered_list_item') {
-			currentGroup.push(curr);
-		} else {
-			if (currentGroup.length > 0) {
-				groupLists.push({ type: 'numbered_list', group: currentGroup } as const);
-				currentGroup = [];
-			}
-			groupLists.push(curr);
-		}
+		appendItemToGripLists(groupLists, curr);
+		// if (curr.type === 'numbered_list_item') {
+		// 	currentGroup.push(curr);
+		// } else {
+		// 	if (currentGroup.length > 0) {
+		// 		groupLists.push({ type: 'numbered_list', group: currentGroup } as const);
+		// 		currentGroup = [];
+		// 	}
+		// 	groupLists.push(curr);
+		// }
 	}
 
 	return groupLists;
+}
+
+function getPreviousItem(groupLists: ParsedElements) {
+	if (groupLists.length === 0) {
+		return undefined;
+	}
+	return groupLists[groupLists.length - 1];
+}
+
+function appendItemToGripLists(groupLists: ParsedElements, block: ParsedBlock) {
+	if (block.type === 'bullet_list_item') {
+		const lastItem = getPreviousItem(groupLists);
+		if (!lastItem || lastItem.type !== 'bulleted_list') {
+			return groupLists.push({
+				type: 'bulleted_list',
+				group: [block]
+			});
+		}
+		return lastItem.group.push(block);
+	} else if (block.type === 'numbered_list_item') {
+		const lastItem = getPreviousItem(groupLists);
+		if (!lastItem || lastItem.type !== 'numbered_list') {
+			return groupLists.push({
+				type: 'numbered_list',
+				group: [block]
+			});
+		}
+		return lastItem.group.push(block);
+	}
+	groupLists.push(block);
 }
 
 export type ParsedBlock = ReturnType<typeof parseBlock>;
@@ -132,11 +165,15 @@ function parseBlock(block: PostBlock) {
 			return parseHeading3(block);
 		case 'heading_2':
 			return parseHeading2(block);
+		case 'bulleted_list_item':
+			return parseBulletListItem(block);
 		default:
 			console.error('unhandled block type:', type, block);
 			throw new Error('block type not implemented');
 	}
 }
+// these are everything except bullet list and number list item (NLI)
+// because those need to be nested grouped later
 type ParsedEle = ParsedH2 | ParsedH3 | ParsedP | ParsedCode | ParsedImage;
 
 export type ParsedH2 = ReturnType<typeof parseHeading2>;
@@ -146,6 +183,15 @@ export type ParsedNLI = ReturnType<typeof parseNumberedListItem>;
 export type ParsedCode = ReturnType<typeof parseCodeBlock>;
 export type ParsedImage = ReturnType<typeof parseImageBlock>;
 export type ParsedRichText = ReturnType<typeof parseRichText>;
+export type ParsedBulletList = ReturnType<typeof parseBulletListItem>;
+
+function parseBulletListItem(block: PostBlock) {
+	const content = parseRichText(block.bulleted_list_item?.rich_text);
+	return {
+		type: 'bullet_list_item',
+		content
+	} as const;
+}
 
 function parseHeading2(block: PostBlock) {
 	const content = parseRichText(block.heading_2?.rich_text);
@@ -161,7 +207,7 @@ function parseRichText(richText?: RichText[]) {
 	}
 	return richText.map((text) => {
 		// console.log(JSON.stringify(text, null, 4));
-		return { ...text.text, code: text.annotations.code };
+		return { ...text.text, code: text.annotations.code, bold: text.annotations.bold };
 	});
 }
 

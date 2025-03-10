@@ -84,32 +84,58 @@ export default class Grid {
 
 	// Check if the specified cell is taken
 	cellAvailable(cell: PositionXY) {
-		return !this.cellOccupied(cell);
+		return !Grid.cellOccupied(cell, this.cells);
+	}
+
+	static cellAvailable(cell: PositionXY, gridCells: GridCells) {
+		return !this.cellOccupied(cell, gridCells);
 	}
 
 	cellOccupied(cell: PositionXY) {
-		return !!this.cellContent(cell);
+		return !!Grid.cellContent(cell, this.cells);
 	}
+
+	static cellOccupied(cell: PositionXY, gridCells: GridCells) {
+		return !!Grid.cellContent(cell, gridCells);
+	}
+
 	cellContent(cell: PositionXY) {
-		if (this.withinBounds(cell)) {
-			return this.cells[cell.x][cell.y];
+		return Grid.cellContent(cell, this.cells);
+	}
+
+	static cellContent(cell: PositionXY, gridCells: GridCells) {
+		if (Grid.withinBounds(cell, gridCells.length)) {
+			return gridCells[cell.x][cell.y];
 		} else {
 			return null;
 		}
 	}
+
 	// Inserts a tile at its position
 	insertTile(tile: Tile) {
+		Grid.insertTile(tile, this.cells);
+	}
+
+	static insertTile(tile: Tile, gridCells: GridCells) {
 		const position = tile.getPosition();
-		this.cells[position.x][position.y] = tile;
+		gridCells[position.x][position.y] = tile;
 	}
 
 	removeTile(tile: Tile) {
+		Grid.removeTile(tile, this.cells);
+	}
+
+	static removeTile(tile: Tile, gridCells: GridCells) {
 		const position = tile.getPosition();
-		this.cells[position.x][position.y] = null;
+		gridCells[position.x][position.y] = null;
 	}
 
 	withinBounds(position: PositionXY) {
-		return position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size;
+		return Grid.withinBounds(position, this.size);
+	}
+
+	static withinBounds(position: PositionXY, size: number) {
+		return position.x >= 0 && position.x < size && position.y >= 0 && position.y < size;
 	}
 
 	serialize(): SerializedGrid {

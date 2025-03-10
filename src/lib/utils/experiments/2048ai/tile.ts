@@ -44,4 +44,8 @@ export default class Tile {
 			value: this.value
 		};
 	}
+
+	toString() {
+		return `${this.x},${this.y},${this.value}`;
+	}
 }

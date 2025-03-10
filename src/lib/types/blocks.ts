@@ -13,6 +13,7 @@ export interface PostBlock {
 	in_trash: boolean;
 	type: string;
 	numbered_list_item?: NumberedListItem;
+	bulleted_list_item?: BulletedListItem;
 	paragraph?: Paragraph;
 	image?: Image;
 	code?: Code;
@@ -36,6 +37,11 @@ export interface LastEditedBy {
 }
 
 export interface NumberedListItem {
+	rich_text: RichText[];
+	color: string;
+}
+
+export interface BulletedListItem {
 	rich_text: RichText[];
 	color: string;
 }
