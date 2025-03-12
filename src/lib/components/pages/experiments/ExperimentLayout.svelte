@@ -6,6 +6,8 @@
 	import type { ParsedBlock } from '$lib/notion/server';
 	import type { Experiment } from '$lib/types/experiments';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
+	import { page } from '$app/stores';
+	import { replaceState } from '$app/navigation';
 	import type { Snippet } from 'svelte';
 
 	const {
@@ -13,9 +15,22 @@
 		blocks,
 		children
 	}: { blocks: ParsedBlock[]; experiment: Experiment; children: Snippet } = $props();
+	const RUN_EXP = 'runExperiment';
 	const { title, thumbnail, description } = experiment;
-
 	let isExperimentRunning = $state(false);
+
+	$effect.pre(() => {
+		const showExperiment = $page.url.searchParams.get(RUN_EXP);
+		if (showExperiment !== null) {
+			isExperimentRunning = showExperiment === 'true';
+		}
+	});
+
+	function updateExperimentRunning(state: boolean) {
+		$page.url.searchParams.set(RUN_EXP, String(state));
+		replaceState($page.url, $page.state);
+		isExperimentRunning = state;
+	}
 </script>
 
 <svelte:head>
@@ -33,7 +48,7 @@
 				variant="secondary"
 				class="absolute bottom-4 right-4 text-white"
 				onclick={() => {
-					isExperimentRunning = false;
+					updateExperimentRunning(false);
 				}}
 			>
 				Close
@@ -63,7 +78,7 @@
 		variant="secondary"
 		class="text-white"
 		onclick={() => {
-			isExperimentRunning = true;
+			updateExperimentRunning(true);
 		}}>Run</Button
 	>
 </div>

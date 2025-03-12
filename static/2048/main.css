@@ -1,5 +1,6 @@
 @import url(fonts/clear-sans.css);
-body {
+
+.page-content {
 	font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 18px;
 }
@@ -656,7 +657,7 @@ hr {
 }
 
 @media screen and (max-width: 560px) {
-	body {
+	.page-content {
 		font-size: 15px;
 	}
 

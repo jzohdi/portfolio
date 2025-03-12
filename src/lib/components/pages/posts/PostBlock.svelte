@@ -1,26 +1,19 @@
 <script lang="ts">
 	import Text from '$lib/components/Text.svelte';
 	import type { ParsedElement, ParsedRichText } from '$lib/notion/server';
-	import 'highlight.js/styles/github-dark.min.css';
-	import { CodeBlock } from 'svhighlight';
 	import LazyImage from '$lib/components/LazyImage.svelte';
-	import Spacer from '$lib/components/Spacer.svelte';
 	import { getImageSrc } from '$lib/utils/svelte-helper';
 	import ATag from '$lib/components/ATag.svelte';
-	import type { RichTextText } from '$lib/types/blocks';
 
 	const { block } = $props();
+
 	const data = block as ParsedElement;
+
 	function isTextLink(content: ParsedRichText[0]) {
 		return !!content?.link?.url;
 	}
-	if (data.type === 'paragraph') {
-		const content = data.content;
-	}
 
-	function parseStringContent(content: RichTextText[]) {
-		return content.map((c) => c.content).join(' ');
-	}
+	const LazyCodeBlock = import('$lib/components/CodeBlock.svelte');
 </script>
 
 {#snippet renderText(content: ParsedRichText)}
@@ -64,11 +57,12 @@
 		{/each}
 	</ul>
 {:else if data.type === 'code'}
-	<Spacer height="10px"></Spacer>
-	<!-- <div class="bg-slate-900 p-4 text-white"> -->
-	<CodeBlock language={data.language} code={data.code} />
-	<!-- </div> -->
-	<Spacer height="10px"></Spacer>
+	{#await LazyCodeBlock then LCB}
+		{@const CodeBlock = LCB.default}
+		<CodeBlock code={data.code} language={data.language} />
+	{:catch error}
+		<p>Failed to load code: {error.message}</p>
+	{/await}
 {:else if data.type === 'image'}
 	<LazyImage imageUrl={getImageSrc('posts', data.url)} />
 {:else}
