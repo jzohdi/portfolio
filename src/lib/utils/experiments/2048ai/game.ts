@@ -42,12 +42,7 @@ export default class GameManager {
 		this.inputManager = inputManager;
 		this.storageManager = storageManager;
 		this.actuator = actuator;
-		this.isGameOver = false;
 		this.startTiles = 2;
-		this.score = 0;
-		this.didWinGame = false;
-		this.grid = new Grid(this.size);
-		this.shouldKeepPlaying = false;
 
 		this.inputManager.on('move', this.move.bind(this));
 		this.inputManager.on('restart', this.restart.bind(this));
@@ -56,9 +51,63 @@ export default class GameManager {
 		const previousState = this.storageManager.getGameState();
 		// Reload the game from a previous game if present
 		if (previousState) {
-			this.loadPeviousState(previousState);
+			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
+			this.score = previousState.score;
+			this.isGameOver = previousState.over;
+			this.didWinGame = previousState.won;
+			this.shouldKeepPlaying = previousState.keepPlaying;
+
+			// Update the actuator
+			this.actuate();
+		} else {
+			this.grid = new Grid(this.size);
+			this.score = 0;
+			this.isGameOver = false;
+			this.didWinGame = false;
+			this.shouldKeepPlaying = false;
+			// Add the initial tiles
+			this.addStartTiles();
+
+			// Update the actuator
+			this.actuate();
 		}
 	}
+
+	load() {
+		const previousState = this.storageManager.getGameState();
+		// Reload the game from a previous game if present
+		console.log(previousState);
+		if (previousState) {
+			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
+			this.score = previousState.score;
+			this.isGameOver = previousState.over;
+			this.didWinGame = previousState.won;
+			this.shouldKeepPlaying = previousState.keepPlaying;
+
+			// Update the actuator
+			this.actuate();
+		} else {
+			this.grid = new Grid(this.size);
+			this.score = 0;
+			this.isGameOver = false;
+			this.didWinGame = false;
+			this.shouldKeepPlaying = false;
+			// Add the initial tiles
+			this.addStartTiles();
+
+			// Update the actuator
+			this.actuate();
+		}
+	}
+
+	setDidWin(value: boolean) {
+		this.didWinGame = value;
+	}
+
+	setShouldKeepGoing(value: boolean) {
+		this.shouldKeepPlaying = value;
+	}
+
 	restart() {
 		this.storageManager.clearGameState();
 		this.actuator.continueGame(); // Clear the game won/lost message
@@ -139,14 +188,15 @@ export default class GameManager {
 		} else {
 			this.storageManager.setGameState(this.serialize());
 		}
-
-		this.actuator.actuate(this.grid, {
+		const metadata = {
 			score: this.score,
 			over: this.isGameOver,
 			won: this.didWinGame,
 			bestScore: this.storageManager.getBestScore(),
 			terminated: this.isGameTerminated()
-		});
+		};
+		// console.log(metadata);
+		this.actuator.actuate(this.grid, metadata);
 	}
 
 	serialize() {
@@ -213,6 +263,10 @@ export default class GameManager {
 				}
 			});
 		});
+	}
+
+	didWin() {
+		return this.didWinGame;
 	}
 
 	move(direction?: MoveDirection) {

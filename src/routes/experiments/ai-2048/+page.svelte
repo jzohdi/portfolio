@@ -1,19 +1,27 @@
 <script lang="ts">
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import LocalStorageManager from '$lib/utils/experiments/2048ai/storage';
 	import HTMLActuator from '$lib/utils/experiments/2048ai/actuator';
 	import {
 		KeyboardInputManager,
 		handleKeyDown,
 		handleTouchEnd,
-		handleTouchMove,
 		handleTouchStart
 	} from '$lib/utils/experiments/2048ai/inputManager';
 	import GameManager from '$lib/utils/experiments/2048ai/game';
 	import Switch from '$lib/components/ui/switch/switch.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import { AlphaBetaAI, gradientSmoothness } from '$lib/utils/experiments/2048ai/ai';
+	import {
+		AlphaBetaAI,
+		calculateQueueCapacity,
+		gradientSmoothness,
+		maxTile,
+		numberOfEmptySquares,
+		scoreTiles
+	} from '$lib/utils/experiments/2048ai/ai';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import Slider from '$lib/components/ui/slider/slider.svelte';
 
 	let tileContainerDiv: HTMLDivElement;
 	let scoreContainerDiv: HTMLDivElement;
@@ -29,11 +37,16 @@
 	let touchStartClientY: number;
 	let inputManager: KeyboardInputManager;
 	let isRunningAi: boolean = $state(false);
-	let gameManager: GameManager;
-	let gameAI: AlphaBetaAI;
+	let gameManager: GameManager | null = $state(null);
+	let gameAI: AlphaBetaAI | null = $state(null);
 	let aiAnimationFrameId: number | undefined;
-
-	let heuristics = $state([gradientSmoothness]);
+	let aiAnimationClosure = $state(() => {});
+	let heuristics = $state([
+		{ ...gradientSmoothness, score: 0 },
+		{ ...numberOfEmptySquares, score: 0 },
+		{ ...scoreTiles, score: 0 }
+	]);
+	let depth = $state(10);
 
 	// Define an action that attaches an event listener with { passive: false }
 	export function nonPassiveEvent(
@@ -68,23 +81,44 @@
 			new LocalStorageManager()
 		);
 		gameAI = new AlphaBetaAI(gameManager, heuristics);
+
+		aiAnimationClosure = () => {
+			if (!isRunningAi && aiAnimationFrameId !== undefined) {
+				cancelAI();
+				return;
+			}
+			// cancel the ai loop if game got terminated
+			if (gameManager?.isGameTerminated()) {
+				cancelAI();
+				return;
+			}
+			// calcluate and move if not terminated
+			const bestMove = gameAI?.calculateBestMove();
+			gameManager?.move(bestMove);
+
+			// updated heuristics scores on ui
+			if (gameManager !== null) {
+				for (const heur of heuristics) {
+					heur.score = heur.func(gameManager.getCurrentGridCopy());
+				}
+			}
+			// debugging didWin gets set even though max tile isn't 2048
+			if (gameManager?.didWin()) {
+				const currentGrid = gameManager.getCurrentGridCopy();
+				const max = maxTile(currentGrid);
+				if (max < 2048) {
+					gameManager.setDidWin(false);
+				}
+			}
+
+			aiAnimationFrameId = requestAnimationFrame(aiAnimationClosure);
+		};
 	});
 
 	function handleToggleRunAi(runAiCheckedState: boolean) {
 		isRunningAi = runAiCheckedState;
-		animateAI();
-	}
-
-	function animateAI() {
-		if (isRunningAi) {
-			if (!gameManager.isGameTerminated()) {
-				const bestMove = gameAI.calculateBestMove();
-				gameManager.move(bestMove);
-			}
-			aiAnimationFrameId = requestAnimationFrame(animateAI);
-		} else if (aiAnimationFrameId !== undefined) {
-			cancelAI();
-		}
+		gameManager?.setShouldKeepGoing(runAiCheckedState);
+		aiAnimationClosure();
 	}
 
 	function cancelAI() {
@@ -92,6 +126,7 @@
 			cancelAnimationFrame(aiAnimationFrameId);
 			aiAnimationFrameId = undefined;
 		}
+		gameManager?.setShouldKeepGoing(false);
 		isRunningAi = false;
 	}
 
@@ -104,7 +139,13 @@
 	<link href="/2048/main.css" rel="stylesheet" type="text/css" />
 </svelte:head>
 
-<svelte:document onkeydown={(event) => handleKeyDown(event, inputManager)} />
+<svelte:document
+	onkeydown={(event) => {
+		if (!isRunningAi) {
+			handleKeyDown(event, inputManager);
+		}
+	}}
+/>
 
 <div class="container-2048">
 	<div class="heading">
@@ -126,7 +167,10 @@
 		use:nonPassiveEvent={{
 			event: 'touchmove',
 			handler: (e) => {
-				if (gameManager.isGameTerminated()) {
+				if (isRunningAi) {
+					return;
+				}
+				if (gameManager?.isGameTerminated()) {
 					return;
 				}
 				e.preventDefault();
@@ -135,7 +179,10 @@
 		use:nonPassiveEvent={{
 			event: 'touchstart',
 			handler: (e) => {
-				if (gameManager.isGameTerminated()) {
+				if (isRunningAi) {
+					return;
+				}
+				if (gameManager?.isGameTerminated()) {
 					return;
 				}
 				if (e instanceof TouchEvent) {
@@ -150,7 +197,10 @@
 		use:nonPassiveEvent={{
 			event: 'touchend',
 			handler: (e) => {
-				if (gameManager.isGameTerminated()) {
+				if (isRunningAi) {
+					return;
+				}
+				if (gameManager?.isGameTerminated()) {
 					return;
 				}
 				if (e instanceof TouchEvent) {
@@ -201,15 +251,57 @@
 		<div bind:this={tileContainerDiv} class="tile-container text-white"></div>
 	</div>
 	<Spacer height="50px"></Spacer>
-	<div></div>
-	<div class="flex items-center space-x-2">
-		<Switch
-			bind:checked={() => isRunningAi, handleToggleRunAi}
-			id="airplane-mode"
-			class="data-[state=checked]:bg-secondary"
-		/>
-		<Label for="airplane-mode">Run AI</Label>
-	</div>
+	<section>
+		<div class="flex items-center space-x-10">
+			<div class="flex items-center space-x-2">
+				<Switch
+					bind:checked={() => isRunningAi, handleToggleRunAi}
+					id="run-ai-switch"
+					class="data-[state=checked]:bg-secondary"
+				/>
+				<Label for="run-ai-switch">Run AI</Label>
+			</div>
+			<div class="flex-1 py-4 text-sm">
+				<span class="flex flex-wrap items-center gap-3">
+					<span class="whitespace-nowrap">
+						<Label for="depth-slider">AI Depth</Label>
+						<span>{depth}</span>
+					</span>
+					<span class="whitespace-nowrap">
+						<strong class="">nodes:</strong>
+						<span class="ml-1">{calculateQueueCapacity(depth, 3)}</span>
+					</span>
+				</span>
+				<Slider
+					class="pt-2"
+					id="depth-slider"
+					value={[depth]}
+					onValueChange={(value) => {
+						depth = value[0];
+						if (gameAI) {
+							gameAI.setDepthLimit(depth);
+						}
+					}}
+					max={14}
+					min={2}
+					step={1}
+				/>
+			</div>
+		</div>
+		<Spacer height="20px"></Spacer>
+		{#each heuristics as heur}
+			<div>
+				<strong class="text-sm">{heur.label}</strong>
+				<Textarea
+					class="field-sizing-content"
+					contenteditable={false}
+					value={heur.func.toString()}
+					rows={10}
+				/>
+				<div class="pb-3 pt-1"><strong class="pr-1">score:</strong>{heur.score}</div>
+			</div>
+		{/each}
+	</section>
 	<p class="game-explanation py-4">
 		<strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the
 		tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>

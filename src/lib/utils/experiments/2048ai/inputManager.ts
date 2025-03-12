@@ -119,7 +119,6 @@ const map = {
 export function handleKeyDown(event: KeyboardEvent, inputManager: KeyboardInputManager) {
 	const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
 	const mapped = map[event.key as keyof typeof map];
-
 	if (!modifiers) {
 		if (mapped !== undefined) {
 			event.preventDefault();

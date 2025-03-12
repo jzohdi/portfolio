@@ -84,15 +84,15 @@ export default class Grid {
 
 	// Check if the specified cell is taken
 	cellAvailable(cell: PositionXY) {
-		return !Grid.cellOccupied(cell, this.cells);
+		return !this.cellOccupied(cell);
 	}
 
 	static cellAvailable(cell: PositionXY, gridCells: GridCells) {
-		return !this.cellOccupied(cell, gridCells);
+		return !Grid.cellOccupied(cell, gridCells);
 	}
 
 	cellOccupied(cell: PositionXY) {
-		return !!Grid.cellContent(cell, this.cells);
+		return !!this.cellContent(cell);
 	}
 
 	static cellOccupied(cell: PositionXY, gridCells: GridCells) {

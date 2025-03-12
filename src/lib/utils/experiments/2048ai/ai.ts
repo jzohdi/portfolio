@@ -5,8 +5,9 @@ import Tile from './tile';
 import type { MoveDirection } from './types';
 import CircularDeque from './utils/CircularDeque';
 
-type Heuristic = {
+export type Heuristic = {
 	weight: number;
+	label: string;
 	func: (grid: GridCells) => number;
 };
 
@@ -28,6 +29,7 @@ function* getNeighborCoords(row: number, col: number): Generator<[number, number
 
 export const gradientSmoothness: Heuristic = {
 	weight: 1,
+	label: 'grid smoothness',
 	func: (grid) => {
 		let score = 100; // default at 100
 		const maxSize = grid.length - 2;
@@ -45,6 +47,54 @@ export const gradientSmoothness: Heuristic = {
 	}
 };
 
+export const numberOfEmptySquares: Heuristic = {
+	weight: 1,
+	label: 'number of empty squares',
+	func: (grid) => {
+		let score = 0;
+		const maxSize = grid.length - 1;
+		for (const [row, col] of cells(0, maxSize, 0, maxSize)) {
+			const value = getCellValue(grid, row, col);
+			if (value === 0) {
+				score += 10;
+			}
+		}
+		return score;
+	}
+};
+
+export function maxTile(grid: GridCells) {
+	let maxTile = 0;
+	for (const [row, col] of cells(0, grid.length - 1, 0, grid.length - 1)) {
+		const value = getCellValue(grid, row, col);
+		if (value > maxTile) {
+			maxTile = value;
+		}
+	}
+	return maxTile;
+}
+
+export const scoreTiles: Heuristic = {
+	weight: 2,
+	label: 'score of tiles',
+	func: (grid) => {
+		let score = 0;
+		const maxSize = grid.length - 1;
+		let maxTile = 0;
+		for (const [row, col] of cells(0, maxSize, 0, maxSize)) {
+			const value = getCellValue(grid, row, col);
+			if (value > 0) {
+				score += Math.log2(value);
+			}
+			if (value > maxTile) {
+				maxTile = value;
+			}
+		}
+		// give a bonus for the max tile
+		return score + maxTile / 2;
+	}
+};
+
 export class AlphaBetaAI {
 	private gameManager: GameManager;
 	private depthLimit = 10; // 4; //10;
@@ -56,6 +106,10 @@ export class AlphaBetaAI {
 		const dequeCapacity = calculateQueueCapacity(this.depthLimit, 4);
 		this.deque = new CircularDeque<GameNode>(dequeCapacity);
 		this.heuristics = heuristics;
+	}
+
+	setDepthLimit(depth: number) {
+		this.depthLimit = depth;
 	}
 
 	calculateBestMove(): MoveDirection {
@@ -123,12 +177,16 @@ export class AlphaBetaAI {
 		return (node: GameNode) => {
 			let total = 0;
 			for (const heuristic of heuristics) {
-				const score = heuristic.func(node.copyGrid());
+				const score = heuristic.func(node.copyGrid()) * heuristic.weight;
 				node.score += score;
 				total += score;
 			}
 			return total;
 		};
+	}
+
+	setHeuristics(heuristics: Heuristic[]) {
+		this.heuristics = heuristics;
 	}
 }
 
@@ -316,7 +374,7 @@ function getAdjecentCell(grid: GridCells, row: number, col: number, move: MoveDi
  * @param maxChildrenPerNode
  * @returns
  */
-function calculateQueueCapacity(depth: number, maxChildrenPerNode: number) {
+export function calculateQueueCapacity(depth: number, maxChildrenPerNode: number) {
 	return (maxChildrenPerNode ** (depth + 1) - 1) / (maxChildrenPerNode - 1);
 }
 

@@ -23,28 +23,27 @@ export default class HTMLActuator {
 	}
 
 	actuate(grid: Grid, metadata: HTMLActuatorMetaData) {
-		requestAnimationFrame(() => {
-			this.clearContainer(this.tileContainer);
+		this.clearContainer(this.tileContainer);
 
-			grid.getCells().forEach((column) => {
-				column.forEach((cell) => {
-					if (cell) {
-						this.addTile(cell);
-					}
-				});
-			});
-
-			this.updateScore(metadata.score);
-			this.updateBestScore(metadata.bestScore);
-
-			if (metadata.terminated) {
-				if (metadata.over) {
-					this.message(false); // You lose
-				} else if (metadata.won) {
-					this.message(true); // You win!
+		grid.getCells().forEach((column) => {
+			column.forEach((cell) => {
+				if (cell) {
+					this.addTile(cell);
 				}
-			}
+			});
 		});
+
+		this.updateScore(metadata.score);
+		this.updateBestScore(metadata.bestScore);
+
+		if (metadata.terminated) {
+			if (metadata.over) {
+				this.message(false); // You lose
+			} else if (metadata.won) {
+				console.log('winning game', metadata);
+				this.message(true); // You win!
+			}
+		}
 	}
 
 	// Continues the game (both restart and keep playing)
@@ -141,7 +140,6 @@ export default class HTMLActuator {
 	message(won: boolean) {
 		const type = won ? 'game-won' : 'game-over';
 		const message = won ? 'You win!' : 'Game over!';
-
 		this.gameMessage.classList.add(type);
 		this.gameMessage.getElementsByTagName('p')[0].textContent = message;
 	}
