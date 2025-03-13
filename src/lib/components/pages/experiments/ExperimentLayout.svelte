@@ -13,8 +13,14 @@
 	const {
 		experiment,
 		blocks,
+		class: classNames,
 		children
-	}: { blocks: ParsedBlock[]; experiment: Experiment; children: Snippet } = $props();
+	}: {
+		class?: string;
+		blocks: ParsedBlock[];
+		experiment: Experiment;
+		children: Snippet;
+	} = $props();
 	const RUN_EXP = 'runExperiment';
 	const { title, thumbnail, description } = experiment;
 	let isExperimentRunning = $state(false);
@@ -23,6 +29,7 @@
 		const showExperiment = $page.url.searchParams.get(RUN_EXP);
 		if (showExperiment !== null) {
 			isExperimentRunning = showExperiment === 'true';
+			document.body.classList.toggle('overflow-hidden', isExperimentRunning);
 		}
 	});
 
@@ -30,6 +37,7 @@
 		$page.url.searchParams.set(RUN_EXP, String(state));
 		replaceState($page.url, $page.state);
 		isExperimentRunning = state;
+		document.body.classList.toggle('overflow-hidden', state);
 	}
 </script>
 
@@ -43,7 +51,7 @@
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
 		style="height: 100svh;"
 	>
-		<div class="relative h-full w-full bg-white">
+		<div class={`relative h-full w-full bg-white dark:bg-background ${classNames ?? ''}`}>
 			<Button
 				variant="secondary"
 				class="absolute bottom-4 right-4 text-white"
@@ -85,3 +93,4 @@
 {#each blocks as block}
 	<PostBlock {block}></PostBlock>
 {/each}
+<svelte:body class:overflow-hidden={isExperimentRunning} />

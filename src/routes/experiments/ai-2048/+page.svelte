@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Spacer from '$lib/components/Spacer.svelte';
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import LocalStorageManager from '$lib/utils/experiments/2048ai/storage';
 	import HTMLActuator from '$lib/utils/experiments/2048ai/actuator';
 	import {
@@ -20,7 +20,6 @@
 		numberOfEmptySquares,
 		scoreTiles
 	} from '$lib/utils/experiments/2048ai/ai';
-	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Slider from '$lib/components/ui/slider/slider.svelte';
 
 	let tileContainerDiv: HTMLDivElement;
@@ -292,12 +291,6 @@
 		{#each heuristics as heur}
 			<div>
 				<strong class="text-sm">{heur.label}</strong>
-				<Textarea
-					class="field-sizing-content"
-					contenteditable={false}
-					value={heur.func.toString()}
-					rows={10}
-				/>
 				<div class="pb-3 pt-1"><strong class="pr-1">score:</strong>{heur.score}</div>
 			</div>
 		{/each}
