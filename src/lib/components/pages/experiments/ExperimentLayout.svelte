@@ -29,7 +29,6 @@
 		const showExperiment = $page.url.searchParams.get(RUN_EXP);
 		if (showExperiment !== null) {
 			isExperimentRunning = showExperiment === 'true';
-			document.body.classList.toggle('overflow-hidden', isExperimentRunning);
 		}
 	});
 
@@ -37,7 +36,6 @@
 		$page.url.searchParams.set(RUN_EXP, String(state));
 		replaceState($page.url, $page.state);
 		isExperimentRunning = state;
-		document.body.classList.toggle('overflow-hidden', state);
 	}
 </script>
 

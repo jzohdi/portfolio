@@ -146,10 +146,11 @@
 	}}
 />
 
-<div class="container-2048">
+<div class="container-2048 body-no-scroll">
+	<Spacer height="20px" />
 	<div class="heading">
 		<h1 class="title">2048</h1>
-		<div class="scores-container">
+		<div class="scores-container text-sm">
 			<div bind:this={scoreContainerDiv} class="score-container">0</div>
 			<div bind:this={bestContainerDiv} class="best-container">0</div>
 		</div>
@@ -249,7 +250,7 @@
 
 		<div bind:this={tileContainerDiv} class="tile-container text-white"></div>
 	</div>
-	<Spacer height="50px"></Spacer>
+	<Spacer height="20px"></Spacer>
 	<section>
 		<div class="flex items-center space-x-10">
 			<div class="flex items-center space-x-2">
