@@ -191,6 +191,7 @@
 						touchStartClientX = result.touchStartClientX;
 						touchStartClientY = result.touchStartClientY;
 					}
+					Number.NEGATIVE_INFINITY;
 				}
 			}
 		}}
