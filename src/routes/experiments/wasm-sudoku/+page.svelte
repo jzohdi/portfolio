@@ -11,7 +11,6 @@
 		type SudokuWasmModule
 	} from '$lib/utils/experiments/wasm/sudoku';
 	import { onMount } from 'svelte';
-	import { number } from 'zod';
 	// functional test to verify that it can be called over and over with the correct results
 	// for (let i = 0; i < 10; i++) {
 	// 	const test1Result = wasm.solve("000000000302540000050301070000000004409006005023054790000000050700810000080060009");
@@ -166,8 +165,8 @@
 						type="text"
 						inputmode="numeric"
 						class={`absolute inset-0 h-full w-full px-0 py-0 text-center text-xl font-medium sm:px-3 sm:py-2
-					${isInvalid ? 'bg-red-100 text-red-600' : ''}
-					${hintEle.row === rowIndex && hintEle.col === colIndex ? 'bg-blue-100 text-blue-600' : ''}`}
+						${isInvalid ? 'bg-red-100 text-red-600' : ''}
+						${hintEle.row === rowIndex && hintEle.col === colIndex ? 'bg-blue-100 text-blue-600' : ''}`}
 						value={getDisplayValue(rowIndex, colIndex)}
 						on:input={(e) => handleInput(rowIndex, colIndex, e)}
 						maxlength={1}
