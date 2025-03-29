@@ -76,3 +76,69 @@ async function inspectWasm(): Promise<void> {
   // Might output: { add: 'function', sumArray: 'function', memory: 'memory' }
 }
 ```
+
+### Compiling Sudoku
+```
+clang --target=wasm32 -O3 \          
+  -Wl,--no-entry \
+  -Wl,--export=solve \
+  -Wl,--export=free \
+  -o sudoku.wasm sudoku.c queue.c hashmaps.c
+```
+Error:
+```shell
+sudoku.c:2:10: fatal error: 'stdio.h' file not found
+    2 | #include <stdio.h>
+      |          ^~~~~~~~~
+1 error generated.
+queue.c:1:10: fatal error: 'stdlib.h' file not found
+    1 | #include <stdlib.h>
+      |          ^~~~~~~~~~
+1 error generated.
+hashmaps.c:2:10: fatal error: 'stdlib.h' file not found
+    2 | #include <stdlib.h>
+      |          ^~~~~~~~~~
+1 error generated.
+```
+
+Download and install the wasi-sdk since we use stdlib functionality 
+like malloc, free, etc. https://github.com/WebAssembly/wasi-sdk/releases
+
+```shell
+tar -xzf wasi-sdk-25.0-arm64-macos.tar.gz -C ~/wasi-sdk/
+```
+Creates
+```shell
+~/wasi-sdk/wasi-sdk-25.0-arm64-macos/share/wasi-sysroot/
+```
+Then can use 
+
+```shelll
+clang --target=wasm32-wasi -O3 \
+  --sysroot=~/wasi-sdk/wasi-sdk-25.0-arm64-macos/share/wasi-sysroot \
+  -Wl,--no-entry \
+  -Wl,--export=solve \
+  -Wl,--export=free \
+  -o sudoku.wasm sudoku.c queue.c hashmaps.c
+```
+
+```shell
+% ls ~/wasi-sdk/wasi-sdk-25.0-arm64-macos/share/wasi-sysroot/include
+c++                     wasm32-wasi-threads     wasm32-wasip1-threads
+wasm32-wasi             wasm32-wasip1           wasm32-wasip2
+```
+
+```shell
+% ls ~/wasi-sdk/wasi-sdk-25.0-arm64-macos/share/wasi-sysroot/include/wasm32-wasi
+``
+You should see standard C headers (like stdio.h, stdlib.h, etc.) in one of these directories.
+
+```shell
+~/wasi-sdk/wasi-sdk-25.0-arm64-macos/bin/clang --target=wasm32-wasi -O3 \
+  -Wl,--no-entry \
+  -Wl,--export=solve \
+  -Wl,--export=free \
+  -Wl,--export=malloc \
+  -o sudoku.wasm sudoku.c queue.c hashmaps.c
+```
+output sudoku.wasm

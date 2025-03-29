@@ -1,5 +1,6 @@
+import type { RichText } from '$lib/types/blocks';
 import type { ProjectResult } from '$lib/types/projects';
-import type { File, NotionNumber, RichText, Title } from '$lib/types/types';
+import type { File, NotionNumber, Title } from '$lib/types/types';
 
 interface TypeWithOrder {
 	properties: {

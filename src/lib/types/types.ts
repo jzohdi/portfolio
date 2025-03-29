@@ -1,7 +1,6 @@
 import type { RichText, RichTextText } from './blocks';
 import type { Experiment } from './experiments';
 import type { Project } from './projects';
-
 export type NotionImageUseCase = 'posts' | 'projects' | 'experiments';
 
 export type HomePageData = {
