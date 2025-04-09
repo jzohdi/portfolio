@@ -13,10 +13,8 @@
 	const {
 		experiment,
 		blocks,
-		class: classNames,
 		children
 	}: {
-		class?: string;
 		blocks: ParsedBlock[];
 		experiment: Experiment;
 		children: Snippet;
@@ -49,7 +47,9 @@
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
 		style="height: 100svh;"
 	>
-		<div class={`relative h-full w-full bg-white dark:bg-background ${classNames ?? ''}`}>
+		<div
+			class={`relative h-full w-full bg-white dark:bg-background ${isExperimentRunning ? 'overflow-y-scroll' : 'overflow-scroll'}`}
+		>
 			<Button
 				variant="secondary"
 				class="absolute bottom-4 right-4 text-white"

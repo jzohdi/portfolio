@@ -4,64 +4,42 @@ export type SimpleWasmModule<T> = WebAssembly.WebAssemblyInstantiatedSource['ins
         memory?: WebAssembly.Memory;
     };
 
-// Load and instantiate the WebAssembly module
 export async function loadWasm<T>(path: string, space: number): Promise<SimpleWasmModule<T>> {
-    // Fetch the WebAssembly file
     const response = await fetch(path);
     const bytes = await response.arrayBuffer();
 
-    // Create import object
     const importObject: WebAssembly.Imports = {
         wasi_snapshot_preview1: {
-            // Provide stubs for required functions.
-            // For example, if your module calls fd_write, you can implement a simple stub:
             fd_write: () => {
                 console.log("fd_write called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             args_get: () => {
                 console.log("args_get called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             args_sizes_get: () => {
                 console.log("args_sizes_get called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             fd_close: () => {
                 console.log("fd_close called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             fd_fdstat_get: () => {
                 console.log("fd_fdstat_get called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             fd_seek: () => {
                 console.log("fd_seek called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             },
             proc_exit: () => {
                 console.log("proc_exit called");
-                // Optionally, implement logic to read from iovs and log output.
-                // For now, just return a success code.
             }
-            // Include any other WASI functions your module may call.
         },
         env: {
             memory: new WebAssembly.Memory({ initial: space, maximum: space * 2 })
-            // You can add imported JavaScript functions here if needed
         }
     };
 
-    // Compile and instantiate the module
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
 
-    // Cast with type assertion
+    // exports contains solve, malloc, free
     return instance.exports as unknown as SimpleWasmModule<T>;
 }
 

@@ -2,13 +2,14 @@
 
 ## TODO
 
-- use sudoku solver to create simple mini sudoku page, use wasm to connect to C code
 - update 2048 to be pictures of tim robinson instead of numbers
 - 2048 ai in worker?
 - create library for adding nav scroller to web page.
 - meta data / SEO
 - improve react draw docs
 - create package to webgl render water effects (based on mindful draw water)
+- everything ever - scroll for every word, scroll down to go A.B, scroll left to see further A..Z
+- offline mode (offline from notion)
 
 ## Post ideas
 
