@@ -1,18 +1,17 @@
 <script lang="ts">
 	import Spacer from '$lib/components/Spacer.svelte';
-	import Text from '$lib/components/Text.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import { getCanvasCoords } from '$lib/utils/experiments/utils/coordinates';
 	import WebGlGraphingCalculator from '$lib/utils/experiments/webgl/graphing-calculator';
 	import { onMount } from 'svelte';
 
 	let canvasElement: HTMLCanvasElement;
 	// let functionString: string | null = null;
-	let xCoordinate: number = 0;
-	let yCoordinate: number = 0;
+	let xCoordinate: number = $state(0);
+	let yCoordinate: number = $state(0);
 	let graphingModule: WebGlGraphingCalculator | null = null;
-	// Set up the ResizeObserver to track the element.
 	let resizeObserver: ResizeObserver | null = null;
 	let formElement: HTMLFormElement;
 	let derivative: string = $state('');
@@ -34,13 +33,12 @@
 		if (!formElement) {
 			return;
 		}
-		// Create the observer and observe the element.
+
 		resizeObserver = new ResizeObserver(() => {
 			handleResize();
 		});
 		resizeObserver.observe(formElement);
 
-		// Cleanup on component destroy.
 		return () => {
 			if (resizeObserver && formElement) {
 				resizeObserver.unobserve(formElement);
@@ -54,34 +52,20 @@
 			currentTarget: EventTarget & HTMLFormElement;
 		}
 	) {
-		// Prevent the default form submission behavior
 		e.preventDefault();
 
-		// Access the form inputs by their id
 		const form = e.currentTarget;
-
-		// Get the function value
 		const functionInput = form.querySelector('#function') as HTMLInputElement;
 		const functionValue = functionInput?.value || '';
-
-		// Get the x coordinate value
 		const xCoordinateInput = form.querySelector('#x-coordinate') as HTMLInputElement;
 		const xCoordinate = xCoordinateInput?.value ? parseFloat(xCoordinateInput.value) : 0;
 
-		console.log({
-			function: functionValue,
-			xCoordinate,
-			yCoordinate
-		});
-
-		// Now you can use these values
 		if (graphingModule !== null) {
 			const parsed = graphingModule.setFormula(functionValue);
 			if (parsed) {
-				graphingModule.graphFormula(xCoordinate);
-				derivative = parsed.derivativeString;
+				handleChangeX(xCoordinate);
+				derivative = parsed.derivativeString ?? '';
 			}
-			// Add any additional functionality with the coordinates
 		}
 	}
 
@@ -91,7 +75,27 @@
 		}
 		const { width } = formElement.getBoundingClientRect();
 		const { height } = canvasElement.getBoundingClientRect();
-		graphingModule.handleResize(width, height, xCoordinate);
+		graphingModule.handleResize(width, height);
+	}
+
+	function handleChangeX(x: number) {
+		if (!graphingModule) {
+			return;
+		}
+		xCoordinate = +x.toFixed(2);
+		const formula = graphingModule.getFormula();
+		const y = formula?.formula.evaluate({ x: xCoordinate });
+		yCoordinate = y;
+		graphingModule.setTangentPoint(xCoordinate);
+	}
+
+	function handleMouseCoords(e: MouseEvent | TouchEvent) {
+		if (!graphingModule) {
+			return;
+		}
+		const { x, y, ...rest } = getCanvasCoords(e);
+		const relative = graphingModule.mapToRelativeCoordinate({ x, y }, rest);
+		handleChangeX(relative.x);
 	}
 </script>
 
@@ -113,11 +117,34 @@
 	<div class="flex flex-wrap items-center gap-5">
 		<span style="flex: 0 0 auto;">
 			<Label for="x-coordinate">x</Label>
-			<Input class="w-14" type="number" name="x-coordinate" id="x-coordinate" placeholder="0" />
+			<Input
+				onchange={(e) => {
+					try {
+						const num = parseFloat(e.currentTarget.value);
+						handleChangeX(num);
+					} catch (e) {
+						console.log(e);
+					}
+				}}
+				value={xCoordinate}
+				class="w-24"
+				type="number"
+				name="x-coordinate"
+				id="x-coordinate"
+				step={0.01}
+				placeholder="0.00"
+			/>
 		</span>
 		<span style="flex: 0 0 auto;">
 			<Label for="y-coordinate">y</Label>
-			<Input class="w-14" type="number" name="y-coordinate" id="y-coordinate" placeholder="0" />
+			<Input
+				value={yCoordinate}
+				class="w-24"
+				type="float"
+				name="y-coordinate"
+				id="y-coordinate"
+				placeholder="0"
+			/>
 		</span>
 		<dl class="flex-auto text-xs">
 			<dt>derivative</dt>
@@ -126,6 +153,11 @@
 	</div>
 	<Spacer height="10px" />
 	<Spacer height="10px" />
-	<canvas class="min-h-0 flex-1 bg-black" bind:this={canvasElement}></canvas>
+	<canvas
+		ontouchmove={(e) => handleMouseCoords(e)}
+		onmousemove={handleMouseCoords}
+		class="min-h-0 flex-1 bg-black"
+		bind:this={canvasElement}
+	></canvas>
 	<Spacer height="15px" />
 </form>
