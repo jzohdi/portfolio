@@ -13,7 +13,6 @@
 
 ## Post ideas
 
-- [ ] Lying Kills
 - [ ] Implementing JWT
 - [ ] What I learned about digital payments
 - [ ] Imagine you are in the middle of a migration - clean code concept. imagine being in the middle of a database migration.

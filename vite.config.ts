@@ -7,5 +7,5 @@ import dotenv from 'dotenv';
 dotenv.config(); // load env vars from .env
 
 export default defineConfig({
-	plugins: [enhancedImages(), sveltekit()]//, saveImages()]
+	plugins: [enhancedImages(), sveltekit(), saveImages()]
 });
