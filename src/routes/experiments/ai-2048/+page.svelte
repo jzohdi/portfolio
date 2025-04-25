@@ -22,6 +22,32 @@
 	} from '$lib/utils/experiments/2048ai/ai';
 	import Slider from '$lib/components/ui/slider/slider.svelte';
 
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { derived } from 'svelte/store';
+
+	// local reactive
+	let tim = $state(false);
+
+	// imperatively update `tim` whenever `page` changes
+	$effect(() => {
+		tim = $page.url.searchParams.get('tim') === 'true';
+	});
+
+	function toggleTim(isOn: boolean) {
+		const params = new URLSearchParams($page.url.searchParams);
+		if (isOn) {
+			params.set('tim', 'true');
+		} else {
+			params.delete('tim');
+		}
+		const q = params.toString();
+		goto($page.url.pathname + (q ? `?${q}` : ''), {
+			replaceState: true,
+			noScroll: true
+		});
+	}
+
 	let tileContainerDiv: HTMLDivElement;
 	let scoreContainerDiv: HTMLDivElement;
 	let bestContainerDiv: HTMLDivElement;
@@ -30,6 +56,9 @@
 	let retryButtonEle: HTMLButtonElement;
 	let keepPlayingButtonEle: HTMLButtonElement;
 	let gameContainerEle: HTMLDivElement;
+
+	// tim mode
+	// let timRobinsonMode = $state(false);
 
 	// Respond to swipe events
 	let touchStartClientX: number;
@@ -162,7 +191,15 @@
 			>New Game</button
 		>
 	</div>
-
+	<div class="flex items-center space-x-2">
+		<Switch
+			checked={tim}
+			onCheckedChange={(e) => toggleTim(e)}
+			id="tim-robinson-mode-toggle"
+			class="data-[state=checked]:bg-secondary"
+		/>
+		<Label for="tim-robinson-mode-toggle">Tim Robinson Mode</Label>
+	</div>
 	<div
 		use:nonPassiveEvent={{
 			event: 'touchmove',
@@ -249,7 +286,7 @@
 			</div>
 		</div>
 
-		<div bind:this={tileContainerDiv} class="tile-container text-white"></div>
+		<div bind:this={tileContainerDiv} class:tim-mode={tim} class="tile-container text-white"></div>
 	</div>
 	<Spacer height="20px"></Spacer>
 	<section>

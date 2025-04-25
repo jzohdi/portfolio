@@ -26,6 +26,7 @@
 	<div class="grid grid-cols-1 sm:grid-cols-3">
 		<div
 			class={`${isSidebarOpen ? '!left-0' : 'right-[calc(100vw-30px)]'} fixed top-[130px] z-10 flex h-screen overflow-hidden bg-white transition-all dark:bg-slate-950 sm:relative sm:!left-0 sm:top-0 sm:col-span-1 sm:h-full`}
+			class:border-t-2={isSidebarOpen}
 		>
 			<div class="h-full overflow-auto px-3 pt-2 sm:block sm:pt-1">
 				<!-- <div class="flex justify-center"> -->
@@ -42,8 +43,9 @@
 				<!-- </div> -->
 			</div>
 			<button
-				class="group flex h-full items-center border-r-[1px] border-r-slate-500 transition-colors hover:border-r-secondary sm:hidden"
+				class="group flex h-full items-center border-r-slate-500 transition-colors hover:border-r-secondary sm:hidden"
 				onclick={handleToggleSidebar}
+				class:border-r-2={isSidebarOpen}
 			>
 				<span class:rotate-180={isSidebarOpen} class="transition-transform">
 					<RightIcon
