@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Header from './Header.svelte';
+	import Footer from './Footer.svelte';
 
 	interface LayoutProps {
 		footer?: Snippet;
@@ -16,6 +17,4 @@
 <main class="mx-auto max-w-6xl px-6">
 	{@render children?.()}
 </main>
-<footer>
-	{@render footer?.()}
-</footer>
+<Footer />

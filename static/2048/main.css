@@ -1,4 +1,5 @@
 @import url(fonts/clear-sans.css);
+
 body:has(div.body-no-scroll) {
 	overflow: hidden;
 }
@@ -7,6 +8,7 @@ body:has(div.body-no-scroll) {
 	font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 18px;
 }
+
 .field-sizing-content {
 	field-sizing: content;
 }
@@ -36,6 +38,7 @@ h1.title {
 		opacity: 0;
 	}
 }
+
 @-moz-keyframes move-up {
 	0% {
 		top: 25px;
@@ -47,6 +50,7 @@ h1.title {
 		opacity: 0;
 	}
 }
+
 @keyframes move-up {
 	0% {
 		top: 25px;
@@ -58,6 +62,7 @@ h1.title {
 		opacity: 0;
 	}
 }
+
 .scores-container {
 	float: right;
 	text-align: right;
@@ -79,6 +84,7 @@ h1.title {
 	margin-top: 8px;
 	text-align: center;
 }
+
 .score-container:after,
 .best-container:after {
 	position: absolute;
@@ -91,6 +97,7 @@ h1.title {
 	text-align: center;
 	color: #eee4da;
 }
+
 .score-container .score-addition,
 .best-container .score-addition {
 	position: absolute;
@@ -142,6 +149,7 @@ hr {
 		opacity: 1;
 	}
 }
+
 @-moz-keyframes fade-in {
 	0% {
 		opacity: 0;
@@ -151,6 +159,7 @@ hr {
 		opacity: 1;
 	}
 }
+
 @keyframes fade-in {
 	0% {
 		opacity: 0;
@@ -160,6 +169,7 @@ hr {
 		opacity: 1;
 	}
 }
+
 .game-container {
 	margin-top: 40px;
 	position: relative;
@@ -180,6 +190,7 @@ hr {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
 .game-container .game-message {
 	display: none;
 	position: absolute;
@@ -197,6 +208,7 @@ hr {
 	-moz-animation-fill-mode: both;
 	animation-fill-mode: both;
 }
+
 .game-container .game-message p {
 	font-size: 60px;
 	font-weight: bold;
@@ -204,10 +216,12 @@ hr {
 	line-height: 60px;
 	margin-top: 222px;
 }
+
 .game-container .game-message .lower {
 	display: block;
 	margin-top: 59px;
 }
+
 .game-container .game-message button {
 	display: inline-block;
 	background: #8f7a66;
@@ -219,16 +233,20 @@ hr {
 	line-height: 42px;
 	margin-left: 9px;
 }
+
 .game-container .game-message button.keep-playing-button {
 	display: none;
 }
+
 .game-container .game-message.game-won {
 	background: rgba(237, 194, 46, 0.5);
 	color: #f9f6f2;
 }
+
 .game-container .game-message.game-won button.keep-playing-button {
 	display: inline-block;
 }
+
 .game-container .game-message.game-won,
 .game-container .game-message.game-over {
 	display: block;
@@ -242,9 +260,11 @@ hr {
 .grid-row {
 	margin-bottom: 15px;
 }
+
 .grid-row:last-child {
 	margin-bottom: 0;
 }
+
 .grid-row:after {
 	content: '';
 	display: block;
@@ -259,6 +279,7 @@ hr {
 	border-radius: 3px;
 	background: rgba(238, 228, 218, 0.35);
 }
+
 .grid-cell:last-child {
 	margin-right: 0;
 }
@@ -274,96 +295,112 @@ hr {
 	height: 107px;
 	line-height: 107px;
 }
+
 .tile.tile-position-1-1 {
 	-webkit-transform: translate(0px, 0px);
 	-moz-transform: translate(0px, 0px);
 	-ms-transform: translate(0px, 0px);
 	transform: translate(0px, 0px);
 }
+
 .tile.tile-position-1-2 {
 	-webkit-transform: translate(0px, 121px);
 	-moz-transform: translate(0px, 121px);
 	-ms-transform: translate(0px, 121px);
 	transform: translate(0px, 121px);
 }
+
 .tile.tile-position-1-3 {
 	-webkit-transform: translate(0px, 242px);
 	-moz-transform: translate(0px, 242px);
 	-ms-transform: translate(0px, 242px);
 	transform: translate(0px, 242px);
 }
+
 .tile.tile-position-1-4 {
 	-webkit-transform: translate(0px, 363px);
 	-moz-transform: translate(0px, 363px);
 	-ms-transform: translate(0px, 363px);
 	transform: translate(0px, 363px);
 }
+
 .tile.tile-position-2-1 {
 	-webkit-transform: translate(121px, 0px);
 	-moz-transform: translate(121px, 0px);
 	-ms-transform: translate(121px, 0px);
 	transform: translate(121px, 0px);
 }
+
 .tile.tile-position-2-2 {
 	-webkit-transform: translate(121px, 121px);
 	-moz-transform: translate(121px, 121px);
 	-ms-transform: translate(121px, 121px);
 	transform: translate(121px, 121px);
 }
+
 .tile.tile-position-2-3 {
 	-webkit-transform: translate(121px, 242px);
 	-moz-transform: translate(121px, 242px);
 	-ms-transform: translate(121px, 242px);
 	transform: translate(121px, 242px);
 }
+
 .tile.tile-position-2-4 {
 	-webkit-transform: translate(121px, 363px);
 	-moz-transform: translate(121px, 363px);
 	-ms-transform: translate(121px, 363px);
 	transform: translate(121px, 363px);
 }
+
 .tile.tile-position-3-1 {
 	-webkit-transform: translate(242px, 0px);
 	-moz-transform: translate(242px, 0px);
 	-ms-transform: translate(242px, 0px);
 	transform: translate(242px, 0px);
 }
+
 .tile.tile-position-3-2 {
 	-webkit-transform: translate(242px, 121px);
 	-moz-transform: translate(242px, 121px);
 	-ms-transform: translate(242px, 121px);
 	transform: translate(242px, 121px);
 }
+
 .tile.tile-position-3-3 {
 	-webkit-transform: translate(242px, 242px);
 	-moz-transform: translate(242px, 242px);
 	-ms-transform: translate(242px, 242px);
 	transform: translate(242px, 242px);
 }
+
 .tile.tile-position-3-4 {
 	-webkit-transform: translate(242px, 363px);
 	-moz-transform: translate(242px, 363px);
 	-ms-transform: translate(242px, 363px);
 	transform: translate(242px, 363px);
 }
+
 .tile.tile-position-4-1 {
 	-webkit-transform: translate(363px, 0px);
 	-moz-transform: translate(363px, 0px);
 	-ms-transform: translate(363px, 0px);
 	transform: translate(363px, 0px);
 }
+
 .tile.tile-position-4-2 {
 	-webkit-transform: translate(363px, 121px);
 	-moz-transform: translate(363px, 121px);
 	-ms-transform: translate(363px, 121px);
 	transform: translate(363px, 121px);
 }
+
 .tile.tile-position-4-3 {
 	-webkit-transform: translate(363px, 242px);
 	-moz-transform: translate(363px, 242px);
 	-ms-transform: translate(363px, 242px);
 	transform: translate(363px, 242px);
 }
+
 .tile.tile-position-4-4 {
 	-webkit-transform: translate(363px, 363px);
 	-moz-transform: translate(363px, 363px);
@@ -380,6 +417,7 @@ hr {
 	-moz-transition-property: -moz-transform;
 	transition-property: transform;
 }
+
 .tile .tile-inner {
 	border-radius: 3px;
 	background: #eee4da;
@@ -388,34 +426,41 @@ hr {
 	z-index: 10;
 	font-size: 55px;
 }
+
 .tile.tile-2 .tile-inner {
 	background: #eee4da;
 	box-shadow:
 		0 0 30px 10px rgba(243, 215, 116, 0),
 		inset 0 0 0 1px rgba(255, 255, 255, 0);
 }
+
 .tile.tile-4 .tile-inner {
 	background: #ede0c8;
 	box-shadow:
 		0 0 30px 10px rgba(243, 215, 116, 0),
 		inset 0 0 0 1px rgba(255, 255, 255, 0);
 }
+
 .tile.tile-8 .tile-inner {
 	color: #f9f6f2;
 	background: #f2b179;
 }
+
 .tile.tile-16 .tile-inner {
 	color: #f9f6f2;
 	background: #f59563;
 }
+
 .tile.tile-32 .tile-inner {
 	color: #f9f6f2;
 	background: #f67c5f;
 }
+
 .tile.tile-64 .tile-inner {
 	color: #f9f6f2;
 	background: #f65e3b;
 }
+
 .tile.tile-128 .tile-inner {
 	color: #f9f6f2;
 	background: #edcf72;
@@ -424,11 +469,13 @@ hr {
 		inset 0 0 0 1px rgba(255, 255, 255, 0.14286);
 	font-size: 45px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-128 .tile-inner {
 		font-size: 25px;
 	}
 }
+
 .tile.tile-256 .tile-inner {
 	color: #f9f6f2;
 	background: #edcc61;
@@ -437,11 +484,13 @@ hr {
 		inset 0 0 0 1px rgba(255, 255, 255, 0.19048);
 	font-size: 45px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-256 .tile-inner {
 		font-size: 25px;
 	}
 }
+
 .tile.tile-512 .tile-inner {
 	color: #f9f6f2;
 	background: #edc850;
@@ -450,11 +499,13 @@ hr {
 		inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
 	font-size: 45px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-512 .tile-inner {
 		font-size: 25px;
 	}
 }
+
 .tile.tile-1024 .tile-inner {
 	color: #f9f6f2;
 	background: #edc53f;
@@ -463,11 +514,13 @@ hr {
 		inset 0 0 0 1px rgba(255, 255, 255, 0.28571);
 	font-size: 35px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-1024 .tile-inner {
 		font-size: 15px;
 	}
 }
+
 .tile.tile-2048 .tile-inner {
 	color: #f9f6f2;
 	background: #edc22e;
@@ -476,16 +529,19 @@ hr {
 		inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
 	font-size: 35px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-2048 .tile-inner {
 		font-size: 15px;
 	}
 }
+
 .tile.tile-super .tile-inner {
 	color: #f9f6f2;
 	background: #3c3a32;
 	font-size: 30px;
 }
+
 @media screen and (max-width: 560px) {
 	.tile.tile-super .tile-inner {
 		font-size: 10px;
@@ -509,6 +565,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 @-moz-keyframes appear {
 	0% {
 		opacity: 0;
@@ -526,6 +583,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 @keyframes appear {
 	0% {
 		opacity: 0;
@@ -543,6 +601,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 .tile-new .tile-inner {
 	-webkit-animation: appear 200ms ease 100ms;
 	-moz-animation: appear 200ms ease 100ms;
@@ -574,6 +633,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 @-moz-keyframes pop {
 	0% {
 		-webkit-transform: scale(0);
@@ -596,6 +656,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 @keyframes pop {
 	0% {
 		-webkit-transform: scale(0);
@@ -618,6 +679,7 @@ hr {
 		transform: scale(1);
 	}
 }
+
 .tile-merged .tile-inner {
 	z-index: 20;
 	-webkit-animation: pop 200ms ease 100ms;
@@ -672,6 +734,7 @@ hr {
 		width: 280px;
 		margin: 0 auto;
 	}
+
 	.game-container {
 		width: 280px;
 	}
@@ -724,6 +787,7 @@ hr {
 		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 	}
+
 	.game-container .game-message {
 		display: none;
 		position: absolute;
@@ -741,6 +805,7 @@ hr {
 		-moz-animation-fill-mode: both;
 		animation-fill-mode: both;
 	}
+
 	.game-container .game-message p {
 		font-size: 60px;
 		font-weight: bold;
@@ -748,10 +813,12 @@ hr {
 		line-height: 60px;
 		margin-top: 222px;
 	}
+
 	.game-container .game-message .lower {
 		display: block;
 		margin-top: 59px;
 	}
+
 	.game-container .game-message button {
 		display: inline-block;
 		background: #8f7a66;
@@ -763,16 +830,20 @@ hr {
 		line-height: 42px;
 		margin-left: 9px;
 	}
+
 	.game-container .game-message button.keep-playing-button {
 		display: none;
 	}
+
 	.game-container .game-message.game-won {
 		background: rgba(237, 194, 46, 0.5);
 		color: #f9f6f2;
 	}
+
 	.game-container .game-message.game-won button.keep-playing-button {
 		display: inline-block;
 	}
+
 	.game-container .game-message.game-won,
 	.game-container .game-message.game-over {
 		display: block;
@@ -786,9 +857,11 @@ hr {
 	.grid-row {
 		margin-bottom: 10px;
 	}
+
 	.grid-row:last-child {
 		margin-bottom: 0;
 	}
+
 	.grid-row:after {
 		content: '';
 		display: block;
@@ -803,6 +876,7 @@ hr {
 		border-radius: 3px;
 		background: rgba(238, 228, 218, 0.35);
 	}
+
 	.grid-cell:last-child {
 		margin-right: 0;
 	}
@@ -818,96 +892,112 @@ hr {
 		height: 58px;
 		line-height: 58px;
 	}
+
 	.tile.tile-position-1-1 {
 		-webkit-transform: translate(0px, 0px);
 		-moz-transform: translate(0px, 0px);
 		-ms-transform: translate(0px, 0px);
 		transform: translate(0px, 0px);
 	}
+
 	.tile.tile-position-1-2 {
 		-webkit-transform: translate(0px, 67px);
 		-moz-transform: translate(0px, 67px);
 		-ms-transform: translate(0px, 67px);
 		transform: translate(0px, 67px);
 	}
+
 	.tile.tile-position-1-3 {
 		-webkit-transform: translate(0px, 135px);
 		-moz-transform: translate(0px, 135px);
 		-ms-transform: translate(0px, 135px);
 		transform: translate(0px, 135px);
 	}
+
 	.tile.tile-position-1-4 {
 		-webkit-transform: translate(0px, 202px);
 		-moz-transform: translate(0px, 202px);
 		-ms-transform: translate(0px, 202px);
 		transform: translate(0px, 202px);
 	}
+
 	.tile.tile-position-2-1 {
 		-webkit-transform: translate(67px, 0px);
 		-moz-transform: translate(67px, 0px);
 		-ms-transform: translate(67px, 0px);
 		transform: translate(67px, 0px);
 	}
+
 	.tile.tile-position-2-2 {
 		-webkit-transform: translate(67px, 67px);
 		-moz-transform: translate(67px, 67px);
 		-ms-transform: translate(67px, 67px);
 		transform: translate(67px, 67px);
 	}
+
 	.tile.tile-position-2-3 {
 		-webkit-transform: translate(67px, 135px);
 		-moz-transform: translate(67px, 135px);
 		-ms-transform: translate(67px, 135px);
 		transform: translate(67px, 135px);
 	}
+
 	.tile.tile-position-2-4 {
 		-webkit-transform: translate(67px, 202px);
 		-moz-transform: translate(67px, 202px);
 		-ms-transform: translate(67px, 202px);
 		transform: translate(67px, 202px);
 	}
+
 	.tile.tile-position-3-1 {
 		-webkit-transform: translate(135px, 0px);
 		-moz-transform: translate(135px, 0px);
 		-ms-transform: translate(135px, 0px);
 		transform: translate(135px, 0px);
 	}
+
 	.tile.tile-position-3-2 {
 		-webkit-transform: translate(135px, 67px);
 		-moz-transform: translate(135px, 67px);
 		-ms-transform: translate(135px, 67px);
 		transform: translate(135px, 67px);
 	}
+
 	.tile.tile-position-3-3 {
 		-webkit-transform: translate(135px, 135px);
 		-moz-transform: translate(135px, 135px);
 		-ms-transform: translate(135px, 135px);
 		transform: translate(135px, 135px);
 	}
+
 	.tile.tile-position-3-4 {
 		-webkit-transform: translate(135px, 202px);
 		-moz-transform: translate(135px, 202px);
 		-ms-transform: translate(135px, 202px);
 		transform: translate(135px, 202px);
 	}
+
 	.tile.tile-position-4-1 {
 		-webkit-transform: translate(202px, 0px);
 		-moz-transform: translate(202px, 0px);
 		-ms-transform: translate(202px, 0px);
 		transform: translate(202px, 0px);
 	}
+
 	.tile.tile-position-4-2 {
 		-webkit-transform: translate(202px, 67px);
 		-moz-transform: translate(202px, 67px);
 		-ms-transform: translate(202px, 67px);
 		transform: translate(202px, 67px);
 	}
+
 	.tile.tile-position-4-3 {
 		-webkit-transform: translate(202px, 135px);
 		-moz-transform: translate(202px, 135px);
 		-ms-transform: translate(202px, 135px);
 		transform: translate(202px, 135px);
 	}
+
 	.tile.tile-position-4-4 {
 		-webkit-transform: translate(202px, 202px);
 		-moz-transform: translate(202px, 202px);
@@ -925,7 +1015,157 @@ hr {
 		line-height: 30px !important;
 		margin-top: 90px !important;
 	}
+
 	.game-message .lower {
 		margin-top: 30px !important;
 	}
+}
+
+.tim-mode .tile-inner {
+	position: relative;
+	/* optionally hide the number visually but keep it in the DOM */
+	color: transparent;
+}
+
+.tim-mode .tile-2 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_hotdog.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-4 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_fedora_safari.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-8 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_carl_havoc.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-16 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_slick_back.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-32 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_sure_about_that.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-64 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_q_zone.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-128 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_complicated.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-256 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_zipline.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-512 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_skip_lunch.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-1024 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_doggydoor.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-2048 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_embarass.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-4096 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_crooner.avif') no-repeat center/contain;
+}
+
+.tim-mode .tile-8192 .tile-inner::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	background: url('/2048/tim/tim_robinson_stanzos.avif') no-repeat center/contain;
 }
