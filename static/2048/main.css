@@ -1035,7 +1035,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_hotdog.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_hotdog.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-4 .tile-inner::before {
@@ -1046,7 +1046,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_fedora_safari.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_fedora_safari.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-8 .tile-inner::before {
@@ -1057,7 +1057,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_carl_havoc.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_carl_havoc.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-16 .tile-inner::before {
@@ -1068,7 +1068,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_slick_back.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_slick_back.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-32 .tile-inner::before {
@@ -1079,7 +1079,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_sure_about_that.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_sure_about_that.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-64 .tile-inner::before {
@@ -1090,7 +1090,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_q_zone.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_q_zone.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-128 .tile-inner::before {
@@ -1101,7 +1101,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_complicated.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_complicated.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-256 .tile-inner::before {
@@ -1112,7 +1112,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_zipline.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_zipline.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-512 .tile-inner::before {
@@ -1123,7 +1123,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_skip_lunch.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_skip_lunch.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-1024 .tile-inner::before {
@@ -1134,7 +1134,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_doggydoor.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_doggydoor.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-2048 .tile-inner::before {
@@ -1145,7 +1145,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_embarass.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_embarass.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-4096 .tile-inner::before {
@@ -1156,7 +1156,7 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_crooner.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_crooner.jpeg') no-repeat center/contain;
 }
 
 .tim-mode .tile-8192 .tile-inner::before {
@@ -1167,5 +1167,5 @@ hr {
 	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
-	background: url('/2048/tim/tim_robinson_stanzos.avif') no-repeat center/contain;
+	background: url('/2048/tim/tim_robinson_stanzos.jpeg') no-repeat center/contain;
 }
