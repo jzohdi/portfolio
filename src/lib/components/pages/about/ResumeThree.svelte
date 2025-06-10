@@ -268,13 +268,20 @@
 	function handlePinch(event: PinchCustomEvent) {
 		if (!camera || !isMobileDevice()) return;
 		
-		const scale = event.detail.scale || 1;
+		// Invert the scale to fix the pinch direction
+		const scale = event.detail.scale ? 1 / event.detail.scale : 1;
 		handleScale(scale);
 	}
 
 	function handleScale(scale: number) {
 		if (!isMobileDevice()) return;
-		const zoomSpeed = 0.1;
+		
+		// Calculate zoom speed based on screen size
+		const screenWidth = window.innerWidth;
+		const baseZoomSpeed = 0.1;
+		// Adjust zoom speed based on screen size - smaller screens get gentler zoom
+		const zoomSpeed = baseZoomSpeed * (screenWidth / 375); // 375 is typical mobile width
+		
 		const newDistance = camera.position.distanceTo(controls.target) * scale;
 		
 		// Clamp zoom distance
