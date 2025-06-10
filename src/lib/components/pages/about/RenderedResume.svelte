@@ -21,6 +21,7 @@
 		type PinchCustomEvent
 	} from 'svelte-gestures';
 	import { isMobileDevice } from '$lib/utils/window';
+	import ResumeThree from './ResumeThree.svelte';
 
 	let referrenceCanvas: HTMLCanvasElement | null = null;
 	let webglCanvas: HTMLCanvasElement | null = $state(null);
@@ -151,9 +152,11 @@
 		>Render Resume</CollapsibleTrigger
 	>
 	<CollapsibleContent>
+		<!-- added later as mobile webgl native zoom having issues. TODO: fix and remove this -->
+		<ResumeThree />
 		<!-- svelte-ignore event_directive_deprecated -->
 		<canvas
-			class="w-full rounded-md border-2 border-zinc-200 bg-black"
+			class="hidden sm:block w-full rounded-md border-2 border-zinc-200 bg-black"
 			bind:this={webglCanvas}
 			onwheel={zoomInWebgl}
 			use:pan={() => ({ delay: 0 })}

@@ -63,10 +63,29 @@ class ZoomState {
 	private scale: number = 1.0;
 	private zoomCenter: [number, number] = [0, 0];
 	private panPosition: [number, number] = [0, 0];
+	private lastZoomTime: number = 0;
 
 	constructor() {}
 
+	private calculateDynamicScaleFactor(deltaY: number, currentTime: number): number {
+		const timeSinceLastZoom = currentTime - this.lastZoomTime;
+		const baseScaleFactor = deltaY > 0 ? 0.95 : 1.05;
+		
+		// If zoom events are very frequent (less than 50ms apart), scale factor approaches 1
+		if (timeSinceLastZoom < 50) {
+			const frequencyFactor = timeSinceLastZoom / 50; // 0 to 1
+			return 1 + (baseScaleFactor - 1) * frequencyFactor;
+		}
+		
+		// For less frequent zooms, use the full scale factor
+		return baseScaleFactor;
+	}
+
 	handleZoom(e: ZoomEventParams, canvas: HTMLCanvasElement) {
+		const currentTime = performance.now();
+		const scaleFactor = this.calculateDynamicScaleFactor(e.deltaY, currentTime);
+		this.lastZoomTime = currentTime;
+
 		// const [mouseX, mouseY] = this.getMousePos(e, canvas);
 		const rect = canvas.getBoundingClientRect();
 		const maxCanvasX = rect.width / 2;
@@ -96,7 +115,6 @@ class ZoomState {
 		const finalChangeY = scaledNormChange[1]; // / this.scale; // clamp(scaledNormChange[1], -clampChangeFactor, clampChangeFactor);
 		this.zoomCenter = [this.zoomCenter[0] + finalChangeX, this.zoomCenter[1] + finalChangeY];
 
-		const scaleFactor = e.deltaY > 0 ? 0.95 : 1.05;
 		const prevScale = this.scale;
 		this.scale *= scaleFactor;
 		this.scale = clamp(this.scale, 0.5, 5.0);

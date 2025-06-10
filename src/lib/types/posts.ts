@@ -1,4 +1,5 @@
-import { type RichText, type DatabaseQuery, type NotionDatabaseEntry } from "./types"
+import type { RichTextText, RichText } from "./blocks";
+import { type DatabaseQuery, type NotionDatabaseEntry } from "./types"
 
 export type PostsQuery = DatabaseQuery<PostsResult>
 
@@ -79,10 +80,7 @@ export type PostProperties = {
     type: string
     title: Array<{
       type: string
-      text: {
-        content: string
-        link: string | null
-      }
+      text: RichTextText
       annotations: {
         bold: boolean
         italic: boolean

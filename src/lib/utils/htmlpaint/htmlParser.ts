@@ -167,11 +167,8 @@ export function createIframeWithHtml(htmlContent: string): Promise<HTMLIFrameEle
 		iframe.onload = () => {
 			const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
 			if (iframeDoc) {
-				iframeDoc.open();
-				iframeDoc.write(htmlContent);
-				iframeDoc.close();
+				iframeDoc.documentElement.innerHTML = htmlContent;
 				adjustSizeOfDocument(iframeDoc);
-				// iframeDoc.body.style.minWidth = '568.8pt';
 			}
 			resolve(iframe);
 		};
