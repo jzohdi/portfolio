@@ -4,8 +4,7 @@
 		CollapsibleContent,
 		CollapsibleTrigger
 	} from '$lib/components/ui/collapsible';
-	import ResumeVinyl from './ResumeVinyl.svelte';
-
+	import StarFoxResume from '$lib/components/starfox/StarFoxResume.svelte';
 </script>
 
 <Collapsible class="w-full">
@@ -14,7 +13,9 @@
 		>Render Resume</CollapsibleTrigger
 	>
 	<CollapsibleContent>
-		<ResumeVinyl />
-		<div class="text-center text-sm text-gray-500 mt-2 italic">Double click vinyl to flip</div>
+		<StarFoxResume />
+		<div class="text-center text-sm text-gray-500 mt-2 italic">
+			Shoot the core to fly through my resume
+		</div>
 	</CollapsibleContent>
 </Collapsible>
