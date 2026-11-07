@@ -17,6 +17,9 @@ import { extractFileUrl } from '../src/lib/notion/helper';
 export function saveImages() {
 	return {
 		name: 'saveNotionPostImages',
+		// Only `vite build`: never `vite dev` or Vitest, which would otherwise need the key and
+		// rewrite the tracked images under static/.
+		apply: 'build' as const,
 		buildStart: async () => {
 			if (process.env.NODE_ENV === 'development') {
 				return;

@@ -124,7 +124,6 @@
 		const textGeometry = new TextGeometry(message, {
 			font: font,
 			size: size,
-			height: height,
 			depth: height,
 			curveSegments: 12,
 			bevelEnabled: true,
