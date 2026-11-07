@@ -11,7 +11,6 @@ export default defineConfig({
 	plugins: [enhancedImages(), sveltekit(), devtoolsJson(), saveImages()],
 	test: {
 		// Unit tests live next to the code; tests/smoke/ is Playwright's (npm run test:smoke).
-		include: ['src/**/*.{test,spec}.{js,ts}'],
-		passWithNoTests: true
+		include: ['src/**/*.{test,spec}.{js,ts}']
 	}
 });
