@@ -4,9 +4,9 @@ import type {
 	DatabaseQuery,
 	NotionDatabaseEntry,
 	NotionNumber,
-	RichText,
 	Thumbnail
 } from './types';
+import type { RichText } from './blocks';
 
 export type Experiment = {
 	title: string;
