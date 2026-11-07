@@ -512,8 +512,13 @@ test('B13–B15: resume.html, the 404 page and the analytics script', async ({ p
 // vercel.json sets these, so only a Vercel deployment sends them (vite preview doesn't).
 test('the security header baseline is on pages, assets and the 404', async ({ request }) => {
 	test.skip(isLocal, 'vercel.json headers apply on Vercel only');
+	// One of Kit's hashed /_app/immutable/ scripts, as linked from the home page.
+	const home = await (await get(request, '/')).text();
+	const immutableJs = home.match(/\/_app\/immutable\/[\w./-]+\.js/)?.[0];
+	expect(immutableJs, 'the home page links an /_app/immutable/ script').toBeTruthy();
 	for (const path of [
 		'/',
+		immutableJs!,
 		'/posts',
 		'/__data.json',
 		'/files/resume.html',

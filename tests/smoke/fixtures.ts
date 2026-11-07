@@ -23,7 +23,7 @@ import {
  * when that host ends in .vercel.app. It's never logged.
  */
 
-export const baseURL = (process.env.BASE_URL ?? 'http://localhost:4173').replace(/\/$/, '');
+const baseURL = (process.env.BASE_URL ?? 'http://localhost:4173').replace(/\/$/, '');
 const baseOrigin = new URL(baseURL).origin;
 const host = new URL(baseURL).hostname;
 export const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(host);

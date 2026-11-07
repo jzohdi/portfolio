@@ -14,7 +14,6 @@ export default defineConfig({
 	testMatch: '*.spec.ts',
 	reporter: 'list',
 	timeout: 90_000,
-	workers: 2,
 	use: {
 		baseURL: (process.env.BASE_URL ?? 'http://localhost:4173').replace(/\/$/, ''),
 		// The installed Google Chrome, so no Playwright browser download is needed.
