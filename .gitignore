@@ -24,3 +24,6 @@ vite.config.ts.timestamp-*
 #image downloads
 /static/projects/
 /static/experiments/
+# Playwright (npm run test:smoke)
+/test-results/
+/playwright-report/

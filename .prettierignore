@@ -2,3 +2,7 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Served byte for byte: generated (Emscripten's sudoku loader), vendored (2048's CSS, a
+# three.js typeface) or hand-tuned (resume.html) files.
+static/

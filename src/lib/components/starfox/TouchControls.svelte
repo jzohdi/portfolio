@@ -170,13 +170,21 @@
 		width: 84px;
 		height: 84px;
 		font-size: 18px;
-		background: radial-gradient(circle at 35% 30%, rgba(120, 255, 120, 0.85), rgba(20, 120, 40, 0.85));
+		background: radial-gradient(
+			circle at 35% 30%,
+			rgba(120, 255, 120, 0.85),
+			rgba(20, 120, 40, 0.85)
+		);
 	}
 
 	.boost {
 		width: 56px;
 		height: 56px;
 		font-size: 16px;
-		background: radial-gradient(circle at 35% 30%, rgba(150, 180, 255, 0.85), rgba(40, 60, 160, 0.85));
+		background: radial-gradient(
+			circle at 35% 30%,
+			rgba(150, 180, 255, 0.85),
+			rgba(40, 60, 160, 0.85)
+		);
 	}
 </style>

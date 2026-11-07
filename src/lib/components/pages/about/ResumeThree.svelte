@@ -27,7 +27,7 @@
 	let THREE: any;
 	let OrbitControls: any;
 	let mesh: any;
-	
+
 	// Mobile pan state
 	let isPanning = false;
 	let lastPanPosition = { x: 0, y: 0 };
@@ -61,13 +61,13 @@
 		camera.lookAt(0, 0, 0);
 
 		// Setup renderer with improved settings
-		renderer = new THREE.WebGLRenderer({ 
-			canvas: threeCanvas, 
+		renderer = new THREE.WebGLRenderer({
+			canvas: threeCanvas,
 			antialias: true,
 			alpha: true,
 			powerPreference: 'high-performance'
 		});
-		
+
 		// Set pixel ratio for better resolution
 		const pixelRatio = Math.min(window.devicePixelRatio, 2);
 		renderer.setPixelRatio(pixelRatio);
@@ -135,7 +135,7 @@
 		didRetry?: boolean
 	) {
 		if (!isMobileDevice()) return;
-		
+
 		adjustSize(referrenceIframe);
 		const tree = await parseIframe(referrenceIframe);
 		if (appenedToHead.length === 0) {
@@ -164,9 +164,9 @@
 		texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 		texture.needsUpdate = true;
 		texture.flipY = true;
-		
+
 		// Create a more interesting material with glow effect
-		const material = new THREE.MeshBasicMaterial({ 
+		const material = new THREE.MeshBasicMaterial({
 			map: texture,
 			transparent: true,
 			side: THREE.DoubleSide
@@ -220,8 +220,8 @@
 
 		// Calculate pan sensitivity based on camera distance and canvas size
 		const distance = camera.position.distanceTo(controls.target);
-		const panSpeed = (distance * 0.001);
-		
+		const panSpeed = distance * 0.001;
+
 		// Convert screen movement to world movement
 		const panX = -deltaX * panSpeed;
 		const panY = deltaY * panSpeed;
@@ -229,24 +229,24 @@
 		// Apply panning to both camera and target to maintain relative position
 		const right = new THREE.Vector3();
 		const up = new THREE.Vector3();
-		
+
 		camera.getWorldDirection(new THREE.Vector3());
 		right.setFromMatrixColumn(camera.matrix, 0);
 		up.setFromMatrixColumn(camera.matrix, 1);
-		
+
 		// Pan in screen space
 		const panVector = new THREE.Vector3();
 		panVector.addScaledVector(right, panX);
 		panVector.addScaledVector(up, panY);
-		
+
 		camera.position.add(panVector);
 		controls.target.add(panVector);
-		
+
 		lastPanPosition = {
 			x: event.detail.x,
 			y: event.detail.y
 		};
-		
+
 		controls.update();
 	}
 
@@ -258,16 +258,16 @@
 	function handleWheel(event: WheelEvent) {
 		if (!isMobileDevice()) return;
 		event.preventDefault();
-		
+
 		// Calculate zoom factor based on wheel delta
 		// deltaY is negative when scrolling up (zoom in) and positive when scrolling down (zoom out)
-		const zoomFactor = 1 + (event.deltaY * -0.001); // Adjust sensitivity with the multiplier
+		const zoomFactor = 1 + event.deltaY * -0.001; // Adjust sensitivity with the multiplier
 		handleScale(zoomFactor);
 	}
 
 	function handlePinch(event: PinchCustomEvent) {
 		if (!camera || !isMobileDevice()) return;
-		
+
 		// Invert the scale to fix the pinch direction
 		const scale = event.detail.scale ? 1 / event.detail.scale : 1;
 		handleScale(scale);
@@ -275,26 +275,24 @@
 
 	function handleScale(scale: number) {
 		if (!isMobileDevice()) return;
-		
+
 		// Calculate zoom speed based on screen size
 		const screenWidth = window.innerWidth;
 		const baseZoomSpeed = 0.1;
 		// Adjust zoom speed based on screen size - smaller screens get gentler zoom
 		const zoomSpeed = baseZoomSpeed * (screenWidth / 375); // 375 is typical mobile width
-		
+
 		const newDistance = camera.position.distanceTo(controls.target) * scale;
-		
+
 		// Clamp zoom distance
 		const clampedDistance = Math.max(
-			controls.minDistance, 
+			controls.minDistance,
 			Math.min(controls.maxDistance, newDistance)
 		);
-		
+
 		// Move camera closer/further from target
-		const direction = new THREE.Vector3()
-			.subVectors(camera.position, controls.target)
-			.normalize();
-		
+		const direction = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
+
 		camera.position.copy(controls.target).addScaledVector(direction, clampedDistance);
 		controls.update();
 	}
@@ -302,7 +300,7 @@
 
 {#if isMobileDevice()}
 	<canvas
-		class="block sm:hidden w-full rounded-md border-2 border-zinc-200 bg-black"
+		class="block w-full rounded-md border-2 border-zinc-200 bg-black sm:hidden"
 		bind:this={threeCanvas}
 		use:pan={panOptions}
 		use:pinch={() => ({})}

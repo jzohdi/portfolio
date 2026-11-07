@@ -1,12 +1,12 @@
-import compileToGlslFormula from "glsl_math";
+import compileToGlslFormula from 'glsl_math';
 
 export default function makeFragmentShader(formula: string): string {
-  const glslFormula = compileToGlslFormula(formula)
+	const glslFormula = compileToGlslFormula(formula);
 
-  // approximation of the slope for derivitave.
-  const derivativeFormula = `(f(x + 0.0001) - f(x - 0.0001)) / 0.0002`;
+	// approximation of the slope for derivitave.
+	const derivativeFormula = `(f(x + 0.0001) - f(x - 0.0001)) / 0.0002`;
 
-  return `
+	return `
   precision highp float;
   uniform vec2 u_resolution;
   uniform vec4 u_viewport;  // xMin, xMax, yMin, yMax

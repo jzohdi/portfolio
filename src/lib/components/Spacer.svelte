@@ -1,12 +1,12 @@
 <script lang="ts">
 	interface SpacerProps {
-		width?: string
-		height?: string
+		width?: string;
+		height?: string;
 	}
 	let { width, height }: SpacerProps = $props();
 </script>
 
-<div class="spacer" style:height={height} style:width={width}></div>
+<div class="spacer" style:height style:width></div>
 
 <style>
 	.spacer {

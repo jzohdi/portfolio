@@ -23,7 +23,12 @@
 	<div class="top-right">
 		<div class="lives">
 			<svg viewBox="0 0 24 16" class="life-icon" aria-hidden="true">
-				<polygon points="12,0 14,10 24,13 12,16 0,13 10,10" fill="#cfd6ff" stroke="#5a6aff" stroke-width="1" />
+				<polygon
+					points="12,0 14,10 24,13 12,16 0,13 10,10"
+					fill="#cfd6ff"
+					stroke="#5a6aff"
+					stroke-width="1"
+				/>
 			</svg>
 			<span class="lives-count">&times;&nbsp;2</span>
 		</div>
