@@ -30,7 +30,7 @@
 				>{post.title}</Text
 			>
 			<Text element="p" class="text-sm text-muted-foreground">{post.description}</Text>
-			<ReadMore/>
+			<ReadMore />
 		</div>
 	</div>
 </a>

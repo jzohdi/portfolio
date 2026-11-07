@@ -27,7 +27,7 @@ export function fillTextWithWrap(
 // 	for (const word of words) {
 // 	  const testLine = currentLine ? `${currentLine} ${word}` : word;
 // 	  const testWidth = ctx.measureText(testLine).width;
-	
+
 // 	  if (testWidth <= boundingWidth) {
 // 		currentLine = testLine;
 // 	  } else {
@@ -37,11 +37,11 @@ export function fillTextWithWrap(
 // 		currentLine = word;
 // 	  }
 // 	}
-  
+
 // 	if (currentLine) {
 // 	  lines.push(currentLine);
 // 	}
-  
+
 // 	return lines;
 //   }
 
@@ -87,8 +87,8 @@ function findMaxFittingWords(
 		}
 	}
 	if (lastValid === 0) {
-		console.error("this should not happen")
-		throw new Error("infinite loop avoided, cannot render resume")
+		console.error('this should not happen');
+		throw new Error('infinite loop avoided, cannot render resume');
 	}
 	return lastValid;
 }

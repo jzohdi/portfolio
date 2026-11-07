@@ -260,7 +260,11 @@ function createCloud(): THREE.Group {
 	const blobCount = 2 + Math.floor(Math.random() * 3);
 	for (let i = 0; i < blobCount; i++) {
 		const blob = new THREE.Mesh(new THREE.IcosahedronGeometry(4 + Math.random() * 4, 0), mat);
-		blob.position.set((i - blobCount / 2) * 5 + Math.random() * 2, Math.random() * 1.5, Math.random() * 2);
+		blob.position.set(
+			(i - blobCount / 2) * 5 + Math.random() * 2,
+			Math.random() * 1.5,
+			Math.random() * 2
+		);
 		blob.scale.y = 0.32;
 		group.add(blob);
 	}

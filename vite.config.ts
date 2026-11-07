@@ -3,7 +3,7 @@ import { enhancedImages } from '@sveltejs/enhanced-img';
 import { defineConfig } from 'vitest/config';
 import { saveImages } from './scripts/save-post-images';
 import dotenv from 'dotenv';
-import devtoolsJson from "vite-plugin-devtools-json";
+import devtoolsJson from 'vite-plugin-devtools-json';
 
 dotenv.config({ quiet: true }); // load env vars from .env (dotenv 17+ logs a line unless quiet)
 

@@ -63,4 +63,4 @@ export type BodyNode = {
 	attributes: Record<string, string>;
 	children: NodeListOf<ChildNode>;
 };
-export type ParseNode = HeadNodes | BodyNode
+export type ParseNode = HeadNodes | BodyNode;

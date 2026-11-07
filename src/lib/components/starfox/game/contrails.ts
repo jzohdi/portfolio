@@ -58,11 +58,7 @@ export class Contrails {
 			return;
 		}
 		puff.sprite.position.copy(position);
-		puff.velocity.set(
-			(Math.random() - 0.5) * 1.4,
-			0.3 + Math.random() * 0.7,
-			worldSpeed * 0.4
-		);
+		puff.velocity.set((Math.random() - 0.5) * 1.4, 0.3 + Math.random() * 0.7, worldSpeed * 0.4);
 		puff.life = LIFE_S;
 		puff.sprite.visible = true;
 	}

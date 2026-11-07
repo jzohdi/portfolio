@@ -84,7 +84,10 @@ export class StarFoxGame {
 		private touch: InputState,
 		private options: GameOptions
 	) {
-		this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+		this.renderer = new THREE.WebGLRenderer({
+			antialias: false,
+			powerPreference: 'high-performance'
+		});
 		this.renderer.setPixelRatio(1);
 		const canvas = this.renderer.domElement;
 		canvas.style.width = '100%';

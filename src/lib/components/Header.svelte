@@ -32,12 +32,9 @@
 	</div>
 	<nav class="hidden items-center space-x-6 md:flex">
 		{#each menuItems as { href, label }}
-		<!-- Error: Cannot subscribe to 'page' store on the server outside of a Svelte component,
+			<!-- Error: Cannot subscribe to 'page' store on the server outside of a Svelte component,
 		 TODOL: change class based on url -->
-			<a
-				{href}
-				class="text-primary hover:text-secondary">{label}</a
-			>
+			<a {href} class="text-primary hover:text-secondary">{label}</a>
 		{/each}
 		<LightDarkToggle />
 	</nav>

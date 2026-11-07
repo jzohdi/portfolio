@@ -16,9 +16,10 @@
 - [ ] Implementing JWT
 - [ ] What I learned about digital payments
 - [ ] Imagine you are in the middle of a migration - clean code concept. imagine being in the middle of a database migration.
-   how would you write the code here.
+      how would you write the code here.
 - [ ] how to use react draw to create AI svgs
 
 ## Other Ideas
-- interactive body simulator game (webgl/threejs?) 
+
+- interactive body simulator game (webgl/threejs?)
 - sqlite cache for notion queries - json files

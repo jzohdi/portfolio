@@ -70,13 +70,13 @@ class ZoomState {
 	private calculateDynamicScaleFactor(deltaY: number, currentTime: number): number {
 		const timeSinceLastZoom = currentTime - this.lastZoomTime;
 		const baseScaleFactor = deltaY > 0 ? 0.95 : 1.05;
-		
+
 		// If zoom events are very frequent (less than 50ms apart), scale factor approaches 1
 		if (timeSinceLastZoom < 50) {
 			const frequencyFactor = timeSinceLastZoom / 50; // 0 to 1
 			return 1 + (baseScaleFactor - 1) * frequencyFactor;
 		}
-		
+
 		// For less frequent zooms, use the full scale factor
 		return baseScaleFactor;
 	}

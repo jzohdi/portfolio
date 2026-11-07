@@ -14,7 +14,7 @@
 	>
 	<CollapsibleContent>
 		<StarFoxResume />
-		<div class="text-center text-sm text-gray-500 mt-2 italic">
+		<div class="mt-2 text-center text-sm italic text-gray-500">
 			Shoot the core to fly through my resume
 		</div>
 	</CollapsibleContent>
