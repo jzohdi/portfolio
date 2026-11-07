@@ -508,3 +508,26 @@ test('B13–B15: resume.html, the 404 page and the analytics script', async ({ p
 	const insights = await get(request, '/_vercel/insights/script.js');
 	expect(insights.status(), 'B15: 200 on Vercel, 404 off it').toBe(isLocal ? 404 : 200);
 });
+
+// vercel.json sets these, so only a Vercel deployment sends them (vite preview doesn't).
+test('the security header baseline is on pages, assets and the 404', async ({ request }) => {
+	test.skip(isLocal, 'vercel.json headers apply on Vercel only');
+	for (const path of [
+		'/',
+		'/posts',
+		'/__data.json',
+		'/files/resume.html',
+		'/sudoku/sudoku_wasi.wasm',
+		'/_app/version.json',
+		`/${NO_SUCH}-page`
+	]) {
+		const h = (await get(request, path)).headers();
+		expect(h['x-content-type-options'], path).toBe('nosniff');
+		expect(h['referrer-policy'], path).toBe('strict-origin-when-cross-origin');
+		expect(h['permissions-policy'], path).toBe('camera=(), microphone=(), geolocation=()');
+		expect(h['content-security-policy'], path).toBe(
+			"frame-ancestors 'self' https://jakezohdi.dev https://studio-zohdi-llc.com https://www.studio-zohdi-llc.com"
+		);
+		expect(h['x-powered-by'], path).toBeUndefined();
+	}
+});
